@@ -7,7 +7,13 @@ import {
   insertFirSchema,
   insertTrafficViolationSchema,
   insertFeedbackSchema,
-  insertSosAlertSchema
+  insertSosAlertSchema,
+  insertWomenSafetyReportSchema,
+  insertSafeRouteSchema,
+  insertChildSafetyAlertSchema,
+  insertCyberCrimeReportSchema,
+  insertNeighborhoodWatchSchema,
+  insertCommunityReportSchema
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -269,6 +275,158 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating SOS alert status:", error);
       res.status(500).json({ message: "Failed to update SOS alert status" });
+    }
+  });
+
+  // Women Safety routes
+  app.post("/api/women-safety/reports", async (req, res) => {
+    try {
+      const reportData = insertWomenSafetyReportSchema.parse(req.body);
+      const report = await storage.createWomenSafetyReport(reportData);
+      res.status(201).json(report);
+    } catch (error) {
+      console.error("Error creating women safety report:", error);
+      res.status(400).json({ message: "Invalid report data" });
+    }
+  });
+
+  app.get("/api/women-safety/reports", async (req, res) => {
+    try {
+      const { userId } = req.query;
+      let reports;
+      if (userId) {
+        reports = await storage.getWomenSafetyReportsByUser(parseInt(userId as string));
+      } else {
+        reports = await storage.getWomenSafetyReports();
+      }
+      res.json(reports);
+    } catch (error) {
+      console.error("Error fetching women safety reports:", error);
+      res.status(500).json({ message: "Failed to fetch reports" });
+    }
+  });
+
+  app.patch("/api/women-safety/reports/:id/status", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      await storage.updateWomenSafetyReportStatus(id, status);
+      res.json({ message: "Report status updated successfully" });
+    } catch (error) {
+      console.error("Error updating report status:", error);
+      res.status(500).json({ message: "Failed to update report status" });
+    }
+  });
+
+  // Safe Routes
+  app.post("/api/safe-routes", async (req, res) => {
+    try {
+      const routeData = insertSafeRouteSchema.parse(req.body);
+      const route = await storage.createSafeRoute(routeData);
+      res.status(201).json(route);
+    } catch (error) {
+      console.error("Error creating safe route:", error);
+      res.status(400).json({ message: "Invalid route data" });
+    }
+  });
+
+  app.get("/api/safe-routes", async (req, res) => {
+    try {
+      const { timeOfDay } = req.query;
+      const routes = await storage.getSafeRoutes(timeOfDay as string);
+      res.json(routes);
+    } catch (error) {
+      console.error("Error fetching safe routes:", error);
+      res.status(500).json({ message: "Failed to fetch safe routes" });
+    }
+  });
+
+  // Child Safety routes
+  app.post("/api/child-safety/alerts", async (req, res) => {
+    try {
+      const alertData = insertChildSafetyAlertSchema.parse(req.body);
+      const alert = await storage.createChildSafetyAlert(alertData);
+      res.status(201).json(alert);
+    } catch (error) {
+      console.error("Error creating child safety alert:", error);
+      res.status(400).json({ message: "Invalid alert data" });
+    }
+  });
+
+  app.get("/api/child-safety/alerts", async (req, res) => {
+    try {
+      const { parentId } = req.query;
+      let alerts;
+      if (parentId) {
+        alerts = await storage.getChildSafetyAlertsByParent(parseInt(parentId as string));
+      } else {
+        alerts = await storage.getActiveChildSafetyAlerts();
+      }
+      res.json(alerts);
+    } catch (error) {
+      console.error("Error fetching child safety alerts:", error);
+      res.status(500).json({ message: "Failed to fetch alerts" });
+    }
+  });
+
+  // Cyber Crime routes
+  app.post("/api/cyber-crime/reports", async (req, res) => {
+    try {
+      const reportData = insertCyberCrimeReportSchema.parse(req.body);
+      const report = await storage.createCyberCrimeReport(reportData);
+      res.status(201).json(report);
+    } catch (error) {
+      console.error("Error creating cyber crime report:", error);
+      res.status(400).json({ message: "Invalid report data" });
+    }
+  });
+
+  app.get("/api/cyber-crime/reports", async (req, res) => {
+    try {
+      const { userId } = req.query;
+      let reports;
+      if (userId) {
+        reports = await storage.getCyberCrimeReportsByUser(parseInt(userId as string));
+      } else {
+        reports = await storage.getCyberCrimeReports();
+      }
+      res.json(reports);
+    } catch (error) {
+      console.error("Error fetching cyber crime reports:", error);
+      res.status(500).json({ message: "Failed to fetch reports" });
+    }
+  });
+
+  // Community Policing routes
+  app.post("/api/community/watch", async (req, res) => {
+    try {
+      const watchData = insertNeighborhoodWatchSchema.parse(req.body);
+      const watch = await storage.createNeighborhoodWatch(watchData);
+      res.status(201).json(watch);
+    } catch (error) {
+      console.error("Error creating neighborhood watch:", error);
+      res.status(400).json({ message: "Invalid watch data" });
+    }
+  });
+
+  app.get("/api/community/watch", async (req, res) => {
+    try {
+      const watchGroups = await storage.getNeighborhoodWatchGroups();
+      res.json(watchGroups);
+    } catch (error) {
+      console.error("Error fetching neighborhood watch groups:", error);
+      res.status(500).json({ message: "Failed to fetch watch groups" });
+    }
+  });
+
+  app.post("/api/community/reports", async (req, res) => {
+    try {
+      const reportData = insertCommunityReportSchema.parse(req.body);
+      const report = await storage.createCommunityReport(reportData);
+      res.status(201).json(report);
+    } catch (error) {
+      console.error("Error creating community report:", error);
+      res.status(400).json({ message: "Invalid report data" });
     }
   });
 
