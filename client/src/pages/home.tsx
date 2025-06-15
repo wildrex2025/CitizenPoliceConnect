@@ -11,7 +11,8 @@ import {
   Globe, 
   AlertTriangle,
   MapPin,
-  MessageSquare 
+  MessageSquare,
+  BarChart
 } from "lucide-react";
 
 export default function Home() {
@@ -42,11 +43,13 @@ export default function Home() {
                 <Shield className="h-12 w-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
                 <h3 className="font-bold text-red-800 dark:text-red-300 mb-2">SOS Emergency</h3>
                 <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-                  Instant emergency alert with location
+                  Voice-activated emergency with AI verification
                 </p>
-                <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
-                  Send SOS Alert
-                </Button>
+                <Link href="/emergency">
+                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                    Emergency System
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -136,12 +139,12 @@ export default function Home() {
             समुदायिक सेवा | Community Services
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link href="/community">
+            <Link href="/analytics">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardContent className="p-6 text-center">
                   <Users className="h-8 w-8 text-indigo-600 dark:text-indigo-400 mx-auto mb-3" />
-                  <h3 className="font-semibold mb-2">Community Policing</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">समुदायिक पोलिसिंग</p>
+                  <h3 className="font-semibold mb-2">AI Analytics</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">डेटा विश्लेषण</p>
                 </CardContent>
               </Card>
             </Link>
