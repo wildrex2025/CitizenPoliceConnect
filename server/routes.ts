@@ -1097,12 +1097,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Serve service worker
-  app.get("/sw.js", (req, res) => {
-    res.setHeader('Content-Type', 'application/javascript');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.sendFile('public/sw.js', { root: process.cwd() });
-  });
+
 
   // PWA offline sync routes
   app.post("/api/offline/sync", async (req, res) => {
