@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { twilioService } from "./services/twilioService";
 import { aiService } from "./services/aiService";
+import { trafficAIService } from "./services/trafficAIService";
 import { 
   insertUserSchema, 
   insertComplaintSchema, 

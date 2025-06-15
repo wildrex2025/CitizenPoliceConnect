@@ -205,6 +205,150 @@ export const communityReports = pgTable("community_reports", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Advanced Traffic Management System
+export const trafficViolationTypes = pgTable("traffic_violation_types", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  category: varchar("category", { length: 50 }).notNull(), // 'standard', 'rural_specific', 'commercial'
+  fineAmount: integer("fine_amount").notNull(),
+  points: integer("points").default(0), // penalty points
+  description: text("description"),
+  isActive: boolean("is_active").default(true),
+});
+
+export const vehicles = pgTable("vehicles", {
+  id: serial("id").primaryKey(),
+  registrationNumber: varchar("registration_number", { length: 20 }).notNull().unique(),
+  ownerName: text("owner_name").notNull(),
+  ownerPhone: varchar("owner_phone", { length: 15 }),
+  vehicleType: varchar("vehicle_type", { length: 30 }).notNull(), // 'two_wheeler', 'car', 'truck', 'tractor', 'bus'
+  vehicleCategory: varchar("vehicle_category", { length: 30 }).notNull(), // 'private', 'commercial', 'agricultural'
+  model: text("model"),
+  year: integer("year"),
+  engineNumber: varchar("engine_number", { length: 50 }),
+  chassisNumber: varchar("chassis_number", { length: 50 }),
+  fitnessExpiry: timestamp("fitness_expiry"),
+  insuranceExpiry: timestamp("insurance_expiry"),
+  lastViolation: timestamp("last_violation"),
+  violationCount: integer("violation_count").default(0),
+  isBlacklisted: boolean("is_blacklisted").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const advancedTrafficViolations = pgTable("advanced_traffic_violations", {
+  id: serial("id").primaryKey(),
+  reporterId: integer("reporter_id").references(() => users.id),
+  violationTypeId: integer("violation_type_id").references(() => trafficViolationTypes.id),
+  vehicleId: integer("vehicle_id").references(() => vehicles.id),
+  registrationNumber: varchar("registration_number", { length: 20 }),
+  location: json("location").notNull(),
+  description: text("description").notNull(),
+  evidencePhotos: json("evidence_photos").default([]), // array of photo URLs
+  evidenceVideo: text("evidence_video"), // video URL
+  timestamp: timestamp("timestamp").notNull(),
+  isVerified: boolean("is_verified").default(false),
+  verificationScore: integer("verification_score").default(0), // AI confidence score
+  status: varchar("status", { length: 20 }).notNull().default('pending'), // 'pending', 'verified', 'rejected', 'processed'
+  fineAmount: integer("fine_amount"),
+  speed: integer("speed"), // detected speed for overspeeding
+  severityLevel: varchar("severity_level", { length: 20 }).default('medium'), // 'low', 'medium', 'high', 'critical'
+  witnessDetails: json("witness_details"),
+  weatherConditions: varchar("weather_conditions", { length: 50 }),
+  trafficConditions: varchar("traffic_conditions", { length: 50 }),
+  assignedOfficerId: integer("assigned_officer_id").references(() => policeOfficers.id),
+  blockchainHash: text("blockchain_hash"), // for tamper-proof storage
+  aiAnalysis: json("ai_analysis"), // AI detection results
+  isAnonymous: boolean("is_anonymous").default(false),
+  rewardPoints: integer("reward_points").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const trafficAccidents = pgTable("traffic_accidents", {
+  id: serial("id").primaryKey(),
+  reporterId: integer("reporter_id").references(() => users.id),
+  location: json("location").notNull(),
+  severityLevel: varchar("severity_level", { length: 20 }).notNull(), // 'minor', 'major', 'fatal'
+  vehiclesInvolved: json("vehicles_involved").notNull(), // array of vehicle details
+  casualties: integer("casualties").default(0),
+  fatalities: integer("fatalities").default(0),
+  description: text("description").notNull(),
+  evidencePhotos: json("evidence_photos").default([]),
+  policeRequired: boolean("police_required").default(true),
+  ambulanceRequired: boolean("ambulance_required").default(false),
+  fireServiceRequired: boolean("fire_service_required").default(false),
+  trafficBlockage: boolean("traffic_blockage").default(false),
+  estimatedClearanceTime: integer("estimated_clearance_time"), // minutes
+  respondingOfficers: json("responding_officers").default([]),
+  hospitalDetails: json("hospital_details"),
+  insuranceClaims: json("insurance_claims").default([]),
+  status: varchar("status", { length: 20 }).notNull().default('reported'), // 'reported', 'responding', 'cleared', 'investigating'
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const citizenRewards = pgTable("citizen_rewards", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  totalPoints: integer("total_points").default(0),
+  currentLevel: varchar("current_level", { length: 20 }).default('bronze'), // 'bronze', 'silver', 'gold', 'platinum'
+  badges: json("badges").default([]), // array of earned badges
+  monthlyRank: integer("monthly_rank"),
+  yearlyRank: integer("yearly_rank"),
+  reportsSubmitted: integer("reports_submitted").default(0),
+  reportsVerified: integer("reports_verified").default(0),
+  lastActivityAt: timestamp("last_activity_at").defaultNow(),
+  rewardsRedeemed: json("rewards_redeemed").default([]),
+  achievements: json("achievements").default([]),
+});
+
+export const trafficHotspots = pgTable("traffic_hotspots", {
+  id: serial("id").primaryKey(),
+  location: json("location").notNull(),
+  areaName: text("area_name").notNull(),
+  violationType: varchar("violation_type", { length: 50 }).notNull(),
+  riskLevel: varchar("risk_level", { length: 20 }).notNull(), // 'low', 'medium', 'high', 'critical'
+  violationCount: integer("violation_count").default(0),
+  accidentCount: integer("accident_count").default(0),
+  timePattern: json("time_pattern"), // peak hours data
+  recommendations: json("recommendations"), // AI suggestions
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  isActive: boolean("is_active").default(true),
+});
+
+export const eventTrafficManagement = pgTable("event_traffic_management", {
+  id: serial("id").primaryKey(),
+  eventName: text("event_name").notNull(),
+  eventType: varchar("event_type", { length: 30 }).notNull(), // 'festival', 'market', 'vip', 'pilgrimage', 'tourist'
+  location: json("location").notNull(),
+  startDateTime: timestamp("start_date_time").notNull(),
+  endDateTime: timestamp("end_date_time").notNull(),
+  expectedCrowd: integer("expected_crowd"),
+  trafficDiversions: json("traffic_diversions").default([]),
+  assignedOfficers: json("assigned_officers").default([]),
+  emergencyContacts: json("emergency_contacts").default([]),
+  specialInstructions: text("special_instructions"),
+  status: varchar("status", { length: 20 }).notNull().default('planned'), // 'planned', 'active', 'completed'
+  actualCrowd: integer("actual_crowd"),
+  incidentsReported: integer("incidents_reported").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const smartTrafficSignals = pgTable("smart_traffic_signals", {
+  id: serial("id").primaryKey(),
+  location: json("location").notNull(),
+  signalId: varchar("signal_id", { length: 20 }).notNull().unique(),
+  currentState: varchar("current_state", { length: 10 }).notNull(), // 'red', 'yellow', 'green'
+  cycleTime: integer("cycle_time").default(120), // seconds
+  peakHourCycle: integer("peak_hour_cycle").default(90),
+  trafficDensity: varchar("traffic_density", { length: 20 }).default('medium'),
+  lastMaintenance: timestamp("last_maintenance"),
+  isOperational: boolean("is_operational").default(true),
+  aiOptimized: boolean("ai_optimized").default(false),
+  violationsDetected: integer("violations_detected").default(0),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -281,6 +425,61 @@ export const insertCommunityReportSchema = createInsertSchema(communityReports).
   createdAt: true,
 });
 
+export const insertTrafficViolationTypeSchema = createInsertSchema(trafficViolationTypes).omit({
+  id: true,
+});
+
+export const insertVehicleSchema = createInsertSchema(vehicles).omit({
+  id: true,
+  createdAt: true,
+  violationCount: true,
+  lastViolation: true,
+});
+
+export const insertAdvancedTrafficViolationSchema = createInsertSchema(advancedTrafficViolations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  assignedOfficerId: true,
+  isVerified: true,
+  verificationScore: true,
+  blockchainHash: true,
+  rewardPoints: true,
+});
+
+export const insertTrafficAccidentSchema = createInsertSchema(trafficAccidents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  respondingOfficers: true,
+  estimatedClearanceTime: true,
+});
+
+export const insertCitizenRewardsSchema = createInsertSchema(citizenRewards).omit({
+  id: true,
+  lastActivityAt: true,
+});
+
+export const insertTrafficHotspotSchema = createInsertSchema(trafficHotspots).omit({
+  id: true,
+  lastUpdated: true,
+  violationCount: true,
+  accidentCount: true,
+});
+
+export const insertEventTrafficManagementSchema = createInsertSchema(eventTrafficManagement).omit({
+  id: true,
+  createdAt: true,
+  actualCrowd: true,
+  incidentsReported: true,
+});
+
+export const insertSmartTrafficSignalSchema = createInsertSchema(smartTrafficSignals).omit({
+  id: true,
+  lastUpdated: true,
+  violationsDetected: true,
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -323,6 +522,30 @@ export type NeighborhoodWatch = typeof neighborhoodWatch.$inferSelect;
 
 export type InsertCommunityReport = z.infer<typeof insertCommunityReportSchema>;
 export type CommunityReport = typeof communityReports.$inferSelect;
+
+export type InsertTrafficViolationType = z.infer<typeof insertTrafficViolationTypeSchema>;
+export type TrafficViolationType = typeof trafficViolationTypes.$inferSelect;
+
+export type InsertVehicle = z.infer<typeof insertVehicleSchema>;
+export type Vehicle = typeof vehicles.$inferSelect;
+
+export type InsertAdvancedTrafficViolation = z.infer<typeof insertAdvancedTrafficViolationSchema>;
+export type AdvancedTrafficViolation = typeof advancedTrafficViolations.$inferSelect;
+
+export type InsertTrafficAccident = z.infer<typeof insertTrafficAccidentSchema>;
+export type TrafficAccident = typeof trafficAccidents.$inferSelect;
+
+export type InsertCitizenRewards = z.infer<typeof insertCitizenRewardsSchema>;
+export type CitizenRewards = typeof citizenRewards.$inferSelect;
+
+export type InsertTrafficHotspot = z.infer<typeof insertTrafficHotspotSchema>;
+export type TrafficHotspot = typeof trafficHotspots.$inferSelect;
+
+export type InsertEventTrafficManagement = z.infer<typeof insertEventTrafficManagementSchema>;
+export type EventTrafficManagement = typeof eventTrafficManagement.$inferSelect;
+
+export type InsertSmartTrafficSignal = z.infer<typeof insertSmartTrafficSignalSchema>;
+export type SmartTrafficSignal = typeof smartTrafficSignals.$inferSelect;
 
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({

@@ -14,6 +14,14 @@ import {
   cyberCrimeReports,
   neighborhoodWatch,
   communityReports,
+  trafficViolationTypes,
+  vehicles,
+  advancedTrafficViolations,
+  trafficAccidents,
+  citizenRewards,
+  trafficHotspots,
+  eventTrafficManagement,
+  smartTrafficSignals,
   type User,
   type InsertUser,
   type Complaint,
@@ -127,6 +135,40 @@ export interface IStorage {
   createCommunityReport(report: InsertCommunityReport): Promise<CommunityReport>;
   getCommunityReportsByWatch(watchId: number): Promise<CommunityReport[]>;
   getCommunityReportsByUser(userId: number): Promise<CommunityReport[]>;
+  
+  // Advanced Traffic Management operations
+  createAdvancedTrafficViolation(violation: InsertAdvancedTrafficViolation): Promise<AdvancedTrafficViolation>;
+  getAdvancedTrafficViolations(): Promise<AdvancedTrafficViolation[]>;
+  getAdvancedTrafficViolationsByUser(userId: number): Promise<AdvancedTrafficViolation[]>;
+  updateViolationVerification(id: number, isVerified: boolean, score: number): Promise<void>;
+  
+  // Vehicle operations
+  createVehicle(vehicle: InsertVehicle): Promise<Vehicle>;
+  getVehicleByRegistration(regNumber: string): Promise<Vehicle | undefined>;
+  updateVehicleViolationCount(regNumber: string): Promise<void>;
+  
+  // Traffic Accidents operations
+  createTrafficAccident(accident: InsertTrafficAccident): Promise<TrafficAccident>;
+  getTrafficAccidents(): Promise<TrafficAccident[]>;
+  updateAccidentStatus(id: number, status: string): Promise<void>;
+  
+  // Citizen Rewards operations
+  getCitizenRewards(userId: number): Promise<CitizenRewards | undefined>;
+  updateCitizenPoints(userId: number, points: number): Promise<void>;
+  createCitizenRewards(rewards: InsertCitizenRewards): Promise<CitizenRewards>;
+  
+  // Traffic Hotspots operations
+  getTrafficHotspots(): Promise<TrafficHotspot[]>;
+  createTrafficHotspot(hotspot: InsertTrafficHotspot): Promise<TrafficHotspot>;
+  updateHotspotCounts(location: any, violationType: string): Promise<void>;
+  
+  // Event Traffic Management operations
+  createEventTrafficManagement(event: InsertEventTrafficManagement): Promise<EventTrafficManagement>;
+  getActiveEvents(): Promise<EventTrafficManagement[]>;
+  
+  // Smart Traffic Signals operations
+  getSmartTrafficSignals(): Promise<SmartTrafficSignal[]>;
+  updateTrafficSignalState(signalId: string, state: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
