@@ -85,6 +85,43 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Advanced Traffic Management */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
+            ट्रॅफिक व्यवस्थापन | Traffic Management
+          </h2>
+          <Card className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-orange-200 dark:border-orange-800 hover:shadow-xl transition-all">
+            <CardContent className="p-8 text-center">
+              <Car className="h-16 w-16 text-orange-600 dark:text-orange-400 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-orange-800 dark:text-orange-300 mb-3">
+                AhilyaNagar TrafficGuard Pro
+              </h3>
+              <p className="text-orange-600 dark:text-orange-400 mb-6">
+                AI-Powered Traffic Violation Detection & Citizen Reporting System
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-orange-700 dark:text-orange-300">Computer Vision</div>
+                  <div className="text-sm text-orange-600 dark:text-orange-400">AI Violation Detection</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-orange-700 dark:text-orange-300">Citizen Rewards</div>
+                  <div className="text-sm text-orange-600 dark:text-orange-400">Points & Recognition</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-orange-700 dark:text-orange-300">Smart Analytics</div>
+                  <div className="text-sm text-orange-600 dark:text-orange-400">Traffic Hotspots</div>
+                </div>
+              </div>
+              <Link href="/traffic-guard">
+                <Button className="bg-orange-600 hover:bg-orange-700 text-white text-lg px-8 py-3">
+                  Launch TrafficGuard Pro
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Main Services */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">

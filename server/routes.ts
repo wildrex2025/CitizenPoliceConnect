@@ -16,7 +16,8 @@ import {
   insertChildSafetyAlertSchema,
   insertCyberCrimeReportSchema,
   insertNeighborhoodWatchSchema,
-  insertCommunityReportSchema
+  insertCommunityReportSchema,
+  insertAdvancedTrafficViolationSchema
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -584,6 +585,192 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating crime heatmap:", error);
       res.status(500).json({ message: "Failed to generate heatmap" });
+    }
+  });
+
+  // Advanced Traffic Management - TrafficGuard Pro routes
+  app.post("/api/traffic/violations", async (req, res) => {
+    try {
+      const violationData = insertAdvancedTrafficViolationSchema.parse(req.body);
+      
+      // AI-powered violation analysis
+      let aiAnalysis = {};
+      let rewardPoints = 0;
+      
+      if (violationData.evidencePhotos && violationData.evidencePhotos.length > 0) {
+        aiAnalysis = await trafficAIService.analyzeTrafficViolation(
+          violationData.evidencePhotos[0],
+          violationData.description
+        );
+        
+        // Calculate reward points based on AI confidence and violation type
+        rewardPoints = Math.floor((aiAnalysis.confidence || 0) / 10);
+      }
+      
+      const violation = {
+        ...violationData,
+        verificationScore: aiAnalysis.confidence || 0,
+        aiAnalysis,
+        rewardPoints
+      };
+      
+      // Create violation record (simulated for demo)
+      const violationRecord = { id: Date.now(), ...violation };
+      
+      // Send SMS notification if registration number provided
+      if (violationData.registrationNumber) {
+        await twilioService.sendSMS(
+          "+919876543210", // Demo phone number
+          `Traffic Violation Alert: Your vehicle ${violationData.registrationNumber} has been reported for traffic violation. Location: ${violationData.location?.address || 'Location captured'}. Please follow traffic rules. - Ahilyangara Police`
+        );
+      }
+      
+      res.status(201).json({ 
+        violation: violationRecord, 
+        aiAnalysis, 
+        rewardPoints 
+      });
+    } catch (error) {
+      console.error("Error creating traffic violation:", error);
+      res.status(400).json({ message: "Invalid violation data" });
+    }
+  });
+
+  app.get("/api/traffic/violations", async (req, res) => {
+    try {
+      // Simulated violation data for demo
+      const violations = [
+        {
+          id: 1,
+          violationType: "Mobile Phone Usage",
+          registrationNumber: "MH12AB1234",
+          description: "Driver using mobile phone while driving",
+          timestamp: new Date().toISOString(),
+          status: "verified",
+          severityLevel: "medium",
+          verificationScore: 85,
+          rewardPoints: 8,
+          location: { address: "Main Market, Ahilyangara" }
+        },
+        {
+          id: 2,
+          violationType: "No Helmet",
+          registrationNumber: "MH14XY5678",
+          description: "Two-wheeler rider without helmet",
+          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          status: "pending",
+          severityLevel: "high",
+          verificationScore: 92,
+          rewardPoints: 9,
+          location: { address: "Highway Junction" }
+        }
+      ];
+      
+      res.json(violations);
+    } catch (error) {
+      console.error("Error fetching violations:", error);
+      res.status(500).json({ message: "Failed to fetch violations" });
+    }
+  });
+
+  app.get("/api/traffic/rewards/:userId", async (req, res) => {
+    try {
+      // Simulated rewards data for demo
+      const rewards = {
+        totalPoints: 127,
+        currentLevel: "Silver",
+        monthlyRank: 15,
+        yearlyRank: 45,
+        reportsSubmitted: 23,
+        reportsVerified: 18,
+        badges: ["First Reporter", "Safety Champion", "Monthly Hero"],
+        rewardsRedeemed: []
+      };
+      
+      res.json(rewards);
+    } catch (error) {
+      console.error("Error fetching rewards:", error);
+      res.status(500).json({ message: "Failed to fetch rewards" });
+    }
+  });
+
+  app.get("/api/traffic/violation-types", async (req, res) => {
+    try {
+      const violationTypes = [
+        { id: 1, name: "Mobile Phone Usage", category: "standard", fineAmount: 1000, points: 10 },
+        { id: 2, name: "No Helmet", category: "standard", fineAmount: 1000, points: 10 },
+        { id: 3, name: "Signal Jumping", category: "standard", fineAmount: 1000, points: 15 },
+        { id: 4, name: "Overspeeding", category: "standard", fineAmount: 2000, points: 20 },
+        { id: 5, name: "Cattle on Highway", category: "rural_specific", fineAmount: 2000, points: 15 },
+        { id: 6, name: "Tractor Violation", category: "rural_specific", fineAmount: 3000, points: 20 }
+      ];
+      
+      res.json(violationTypes);
+    } catch (error) {
+      console.error("Error fetching violation types:", error);
+      res.status(500).json({ message: "Failed to fetch violation types" });
+    }
+  });
+
+  app.post("/api/traffic/accidents", async (req, res) => {
+    try {
+      const accidentData = req.body;
+      
+      // AI analysis for accident severity
+      const severityAnalysis = await aiService.analyzeComplaint(accidentData.description);
+      
+      const accident = {
+        id: Date.now(),
+        ...accidentData,
+        severityLevel: severityAnalysis.priority || 'medium',
+        status: 'reported',
+        createdAt: new Date().toISOString()
+      };
+      
+      // Send emergency notifications
+      if (accidentData.ambulanceRequired) {
+        await twilioService.sendSMS(
+          "+919876543210",
+          `ACCIDENT ALERT: Medical assistance required at ${accidentData.location?.address}. Casualties: ${accidentData.casualties || 0}. Emergency services dispatched. - Ahilyangara Police`
+        );
+      }
+      
+      res.status(201).json(accident);
+    } catch (error) {
+      console.error("Error creating accident report:", error);
+      res.status(400).json({ message: "Invalid accident data" });
+    }
+  });
+
+  app.get("/api/traffic/hotspots", async (req, res) => {
+    try {
+      const hotspots = [
+        {
+          id: 1,
+          areaName: "Main Market Square",
+          location: { lat: 19.8762, lng: 75.3433, address: "Main Market, Ahilyangara" },
+          violationType: "Illegal Parking",
+          riskLevel: "high",
+          violationCount: 45,
+          timePattern: { peak: "10AM-12PM, 6PM-8PM" },
+          recommendations: ["Deploy traffic wardens", "Install CCTV cameras"]
+        },
+        {
+          id: 2,
+          areaName: "Highway Junction",
+          location: { lat: 19.8775, lng: 75.3445, address: "Highway Junction" },
+          violationType: "Signal Jumping",
+          riskLevel: "critical",
+          violationCount: 78,
+          timePattern: { peak: "8AM-10AM, 5PM-7PM" },
+          recommendations: ["Install red light cameras", "Increase patrol timing"]
+        }
+      ];
+      
+      res.json(hotspots);
+    } catch (error) {
+      console.error("Error fetching traffic hotspots:", error);
+      res.status(500).json({ message: "Failed to fetch hotspots" });
     }
   });
 

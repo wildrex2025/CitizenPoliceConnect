@@ -8,6 +8,7 @@ import WomenSafety from "@/pages/women-safety";
 import ChildSafety from "@/pages/child-safety";
 import AnalyticsDashboard from "@/pages/analytics-dashboard";
 import EmergencySOS from "@/pages/emergency-sos";
+import TrafficGuard from "@/pages/traffic-guard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/child-safety" component={ChildSafety} />
       <Route path="/analytics" component={AnalyticsDashboard} />
       <Route path="/emergency" component={EmergencySOS} />
+      <Route path="/traffic-guard" component={TrafficGuard} />
       <Route component={NotFound} />
     </Switch>
   );

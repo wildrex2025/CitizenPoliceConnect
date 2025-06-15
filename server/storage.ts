@@ -50,6 +50,20 @@ import {
   type InsertNeighborhoodWatch,
   type CommunityReport,
   type InsertCommunityReport,
+  type AdvancedTrafficViolation,
+  type InsertAdvancedTrafficViolation,
+  type Vehicle,
+  type InsertVehicle,
+  type TrafficAccident,
+  type InsertTrafficAccident,
+  type CitizenRewards,
+  type InsertCitizenRewards,
+  type TrafficHotspot,
+  type InsertTrafficHotspot,
+  type EventTrafficManagement,
+  type InsertEventTrafficManagement,
+  type SmartTrafficSignal,
+  type InsertSmartTrafficSignal,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, or, like } from "drizzle-orm";
