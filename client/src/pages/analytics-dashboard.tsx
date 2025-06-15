@@ -135,7 +135,7 @@ export default function AnalyticsDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {dashboardData?.crimeAnalysis?.hotspots?.length > 0 ? (
+            {dashboardData && dashboardData.crimeAnalysis?.hotspots?.length > 0 ? (
               <div className="space-y-4">
                 <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">Crime Hotspots</h4>
                 {dashboardData.crimeAnalysis.hotspots.slice(0, 3).map((hotspot: any, index: number) => (
@@ -207,7 +207,7 @@ export default function AnalyticsDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {dashboardData?.recentIncidents?.length > 0 ? (
+            {dashboardData && dashboardData.recentIncidents?.length > 0 ? (
               dashboardData.recentIncidents.map((incident: any, index: number) => (
                 <div key={index} className="border rounded-lg p-4">
                   <div className="flex justify-between items-start mb-2">

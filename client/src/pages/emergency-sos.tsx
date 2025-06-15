@@ -26,9 +26,20 @@ export default function EmergencySOS() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const sosAlertMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("/api/sos", "POST", data),
-    onSuccess: (response) => {
+  interface SOSResponse {
+    fakeDetection?: {
+      isFake?: boolean;
+      confidence?: number;
+      reason?: string;
+    };
+  }
+
+  const sosAlertMutation = useMutation<SOSResponse, Error, any>({
+    mutationFn: async (data: any): Promise<SOSResponse> => {
+      const response = await apiRequest("/api/sos", "POST", data);
+      return response as SOSResponse;
+    },
+    onSuccess: (response: SOSResponse) => {
       queryClient.invalidateQueries({ queryKey: ["/api/sos/active"] });
       toast({ 
         title: "Emergency Alert Sent!", 
@@ -36,7 +47,7 @@ export default function EmergencySOS() {
       });
       
       // Show fraud detection results if available
-      if (response.fakeDetection?.isFake && response.fakeDetection.confidence > 70) {
+      if (response.fakeDetection?.isFake && response.fakeDetection.confidence && response.fakeDetection.confidence > 70) {
         toast({
           title: "Alert Review Required",
           description: `This alert requires verification: ${response.fakeDetection.reason}`,

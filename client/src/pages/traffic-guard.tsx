@@ -51,11 +51,17 @@ export default function TrafficGuard() {
     queryKey: ["/api/traffic/violation-types"],
   });
 
-  const { data: myRewards } = useQuery({
+  interface RewardsData {
+    totalPoints: number;
+    currentLevel: string;
+    monthlyRank: string;
+  }
+
+  const { data: myRewards } = useQuery<RewardsData>({
     queryKey: ["/api/traffic/rewards/1"], // user ID 1 for demo
   });
 
-  const { data: recentViolations = [] } = useQuery({
+  const { data: recentViolations = [] } = useQuery<any[]>({
     queryKey: ["/api/traffic/violations"],
   });
 
@@ -67,8 +73,11 @@ export default function TrafficGuard() {
     rewardPoints?: number;
   }
 
-  const submitViolationMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("/api/traffic/violations", "POST", data),
+  const submitViolationMutation = useMutation<ViolationResponse, Error, any>({
+    mutationFn: async (data: any): Promise<ViolationResponse> => {
+      const response = await apiRequest("/api/traffic/violations", "POST", data);
+      return response as ViolationResponse;
+    },
     onSuccess: (response: ViolationResponse) => {
       queryClient.invalidateQueries({ queryKey: ["/api/traffic/violations"] });
       queryClient.invalidateQueries({ queryKey: ["/api/traffic/rewards/1"] });
