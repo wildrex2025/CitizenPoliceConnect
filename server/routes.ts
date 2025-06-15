@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { twilioService } from "./services/twilioService";
+import { aiService } from "./services/aiService";
 import { 
   insertUserSchema, 
   insertComplaintSchema, 
@@ -49,8 +51,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/complaints", async (req, res) => {
     try {
       const complaintData = insertComplaintSchema.parse(req.body);
-      const complaint = await storage.createComplaint(complaintData);
-      res.status(201).json(complaint);
+      
+      // AI analysis of complaint
+      const analysis = await aiService.analyzeComplaint(complaintData.description);
+      
+      // Create complaint with AI insights
+      const enhancedComplaintData = {
+        ...complaintData,
+        category: analysis.category || complaintData.category,
+        priority: analysis.priority || 'medium'
+      };
+      
+      const complaint = await storage.createComplaint(enhancedComplaintData);
+      
+      // Send SMS confirmation if user phone available
+      if (complaintData.complainantId) {
+        const user = await storage.getUser(complaintData.complainantId);
+        if (user?.phone) {
+          await twilioService.sendComplaintConfirmation(
+            user.phone, 
+            complaint.id, 
+            complaint.category
+          );
+        }
+      }
+      
+      res.status(201).json({ complaint, analysis });
     } catch (error) {
       console.error("Error creating complaint:", error);
       res.status(400).json({ message: "Invalid complaint data" });
@@ -248,8 +274,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/sos", async (req, res) => {
     try {
       const alertData = insertSosAlertSchema.parse(req.body);
-      const alert = await storage.createSosAlert(alertData);
-      res.status(201).json(alert);
+      
+      // AI-powered fake emergency detection
+      const fakeDetection = await aiService.detectFakeEmergency(alertData);
+      
+      // Create alert with fraud detection metadata
+      const alert = await storage.createSosAlert({
+        ...alertData,
+        // Store fraud detection in medical info for now
+        medicalInfo: { 
+          ...alertData.medicalInfo, 
+          fraudDetection: fakeDetection 
+        }
+      });
+      
+      // Send SMS alert if not detected as fake or low confidence
+      if (!fakeDetection.isFake || fakeDetection.confidence < 70) {
+        if (alertData.userId) {
+          const user = await storage.getUser(alertData.userId);
+          if (user?.phone) {
+            await twilioService.sendEmergencyAlert(
+              user.phone,
+              alertData.location,
+              alertData.alertType
+            );
+          }
+        }
+      }
+      
+      res.status(201).json({ alert, fakeDetection });
     } catch (error) {
       console.error("Error creating SOS alert:", error);
       res.status(400).json({ message: "Invalid SOS alert data" });
@@ -283,6 +336,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const reportData = insertWomenSafetyReportSchema.parse(req.body);
       const report = await storage.createWomenSafetyReport(reportData);
+      
+      // Send SMS notification for women safety incidents
+      if (reportData.reporterId) {
+        const user = await storage.getUser(reportData.reporterId);
+        if (user?.phone) {
+          await twilioService.sendWomenSafetyAlert(
+            user.phone,
+            reportData.incidentType,
+            reportData.location
+          );
+        }
+      }
+      
       res.status(201).json(report);
     } catch (error) {
       console.error("Error creating women safety report:", error);
