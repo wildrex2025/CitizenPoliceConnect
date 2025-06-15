@@ -6,17 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Serve service worker with proper headers
-app.use(express.static('public', {
-  setHeaders: (res, path) => {
-    if (path.endsWith('sw.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
-    }
-  }
-}));
+
 
 app.use((req, res, next) => {
   const start = Date.now();
