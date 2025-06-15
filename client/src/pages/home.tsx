@@ -14,6 +14,8 @@ import {
   MessageSquare,
   BarChart
 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function Home() {
   return (
