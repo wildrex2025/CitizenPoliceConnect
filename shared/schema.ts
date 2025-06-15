@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, timestamp, json, varchar } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -153,3 +154,75 @@ export type SosAlert = typeof sosAlerts.$inferSelect;
 
 export type PoliceOfficer = typeof policeOfficers.$inferSelect;
 export type EmergencyContact = typeof emergencyContacts.$inferSelect;
+
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  complaints: many(complaints),
+  firs: many(firs),
+  trafficViolations: many(trafficViolations),
+  feedback: many(feedback),
+  sosAlerts: many(sosAlerts),
+}));
+
+export const complaintsRelations = relations(complaints, ({ one, many }) => ({
+  complainant: one(users, {
+    fields: [complaints.complainantId],
+    references: [users.id],
+  }),
+  assignedOfficer: one(policeOfficers, {
+    fields: [complaints.assignedOfficerId],
+    references: [policeOfficers.id],
+  }),
+  firs: many(firs),
+}));
+
+export const firsRelations = relations(firs, ({ one }) => ({
+  complaint: one(complaints, {
+    fields: [firs.complaintId],
+    references: [complaints.id],
+  }),
+  complainant: one(users, {
+    fields: [firs.complainantId],
+    references: [users.id],
+  }),
+  investigatingOfficer: one(policeOfficers, {
+    fields: [firs.investigatingOfficerId],
+    references: [policeOfficers.id],
+  }),
+}));
+
+export const policeOfficersRelations = relations(policeOfficers, ({ many }) => ({
+  assignedComplaints: many(complaints),
+  investigatingFirs: many(firs),
+  feedback: many(feedback),
+  respondingSosAlerts: many(sosAlerts),
+}));
+
+export const trafficViolationsRelations = relations(trafficViolations, ({ one }) => ({
+  reporter: one(users, {
+    fields: [trafficViolations.reporterId],
+    references: [users.id],
+  }),
+}));
+
+export const feedbackRelations = relations(feedback, ({ one }) => ({
+  user: one(users, {
+    fields: [feedback.userId],
+    references: [users.id],
+  }),
+  officer: one(policeOfficers, {
+    fields: [feedback.officerId],
+    references: [policeOfficers.id],
+  }),
+}));
+
+export const sosAlertsRelations = relations(sosAlerts, ({ one }) => ({
+  user: one(users, {
+    fields: [sosAlerts.userId],
+    references: [users.id],
+  }),
+  respondingOfficer: one(policeOfficers, {
+    fields: [sosAlerts.respondingOfficerId],
+    references: [policeOfficers.id],
+  }),
+}));
