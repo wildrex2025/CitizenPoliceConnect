@@ -28,12 +28,25 @@ export default function PWAInstallPrompt() {
 
   const handleInstall = async () => {
     setIsInstalling(true);
-    const success = await installPWA();
-    
-    if (success) {
-      setShowPrompt(false);
+    try {
+      const success = await installPWA();
+      
+      if (success) {
+        setShowPrompt(false);
+        localStorage.setItem('pwa-installed', 'true');
+      } else {
+        // Fallback for browsers that don't support beforeinstallprompt
+        if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+          alert('To install this app on iOS: tap Share button and then "Add to Home Screen"');
+        } else {
+          alert('Please use your browser\'s menu to install this app');
+        }
+      }
+    } catch (error) {
+      console.error('Installation failed:', error);
+    } finally {
+      setIsInstalling(false);
     }
-    setIsInstalling(false);
   };
 
   const handleDismiss = () => {
