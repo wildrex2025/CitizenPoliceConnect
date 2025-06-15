@@ -774,6 +774,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Real-time traffic monitoring routes
+  app.get("/api/traffic/live-monitoring", async (req, res) => {
+    try {
+      const liveData = {
+        areas: [
+          { id: "market", name: "Market Square", vehicles: 145, violations: 3, density: "high" },
+          { id: "highway", name: "Highway Junction", vehicles: 287, violations: 7, density: "congested" },
+          { id: "station", name: "Railway Station", vehicles: 198, violations: 2, density: "medium" }
+        ],
+        recentViolations: [
+          {
+            id: 1,
+            type: "Signal Jump",
+            location: "Highway Junction",
+            time: "2 mins ago",
+            vehicle: "MH12AB1234",
+            confidence: 94,
+            status: "verified"
+          }
+        ]
+      };
+      res.json(liveData);
+    } catch (error) {
+      console.error("Error fetching live monitoring data:", error);
+      res.status(500).json({ message: "Failed to fetch live data" });
+    }
+  });
+
+  app.get("/api/traffic/camera-feeds", async (req, res) => {
+    try {
+      const feeds = [
+        { id: 1, location: "Market Square", status: "online", aiActive: true },
+        { id: 2, location: "Highway Junction", status: "online", aiActive: true },
+        { id: 3, location: "Railway Station", status: "maintenance", aiActive: false }
+      ];
+      res.json(feeds);
+    } catch (error) {
+      console.error("Error fetching camera feeds:", error);
+      res.status(500).json({ message: "Failed to fetch camera feeds" });
+    }
+  });
+
+  app.get("/api/traffic/signals/status", async (req, res) => {
+    try {
+      const signals = [
+        { name: "Market Square Signal", status: "operational", timing: "90s cycle" },
+        { name: "Highway Junction", status: "maintenance", timing: "Manual override" },
+        { name: "Railway Crossing", status: "operational", timing: "120s cycle" }
+      ];
+      res.json(signals);
+    } catch (error) {
+      console.error("Error fetching signal status:", error);
+      res.status(500).json({ message: "Failed to fetch signal status" });
+    }
+  });
+
+  // Vehicle tracking routes
+  app.get("/api/vehicles/tracking", async (req, res) => {
+    try {
+      const vehicles = [
+        {
+          registrationNumber: "MH12AB1234",
+          ownerName: "राज पाटील",
+          vehicleType: "Car",
+          model: "Maruti Swift",
+          lastLocation: "Market Square, Ahilyangara",
+          lastSeen: "5 mins ago",
+          violationCount: 3,
+          status: "active",
+          insuranceStatus: "valid",
+          pucStatus: "expired"
+        }
+      ];
+      res.json(vehicles);
+    } catch (error) {
+      console.error("Error fetching vehicle tracking data:", error);
+      res.status(500).json({ message: "Failed to fetch vehicle data" });
+    }
+  });
+
+  app.get("/api/vehicles/track/:regNumber", async (req, res) => {
+    try {
+      const { regNumber } = req.params;
+      
+      // Simulate vehicle tracking
+      const vehicleData = {
+        registrationNumber: regNumber,
+        ownerName: "राज पाटील",
+        vehicleType: "Car",
+        model: "Maruti Swift",
+        lastLocation: "Market Square, Ahilyangara",
+        lastSeen: "5 mins ago",
+        violationCount: 3,
+        status: "active",
+        insuranceStatus: "valid",
+        pucStatus: "expired",
+        coordinates: { lat: 19.8762, lng: 75.3433 }
+      };
+      
+      res.json(vehicleData);
+    } catch (error) {
+      console.error("Error tracking vehicle:", error);
+      res.status(404).json({ message: "Vehicle not found" });
+    }
+  });
+
+  app.get("/api/vehicles/violations/:regNumber", async (req, res) => {
+    try {
+      const violations = [
+        {
+          date: "2024-01-15",
+          type: "Signal Jumping",
+          location: "Highway Junction",
+          fine: 1000,
+          status: "paid"
+        },
+        {
+          date: "2024-01-10",
+          type: "No Helmet",
+          location: "Market Square",
+          fine: 1000,
+          status: "pending"
+        }
+      ];
+      res.json(violations);
+    } catch (error) {
+      console.error("Error fetching vehicle violations:", error);
+      res.status(500).json({ message: "Failed to fetch violations" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

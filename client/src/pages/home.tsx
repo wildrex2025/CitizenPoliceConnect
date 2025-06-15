@@ -113,11 +113,28 @@ export default function Home() {
                   <div className="text-sm text-orange-600 dark:text-orange-400">Traffic Hotspots</div>
                 </div>
               </div>
-              <Link href="/traffic-guard">
-                <Button className="bg-orange-600 hover:bg-orange-700 text-white text-lg px-8 py-3">
-                  Launch TrafficGuard Pro
-                </Button>
-              </Link>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <Link href="/traffic-guard">
+                  <Button className="bg-orange-600 hover:bg-orange-700 text-white w-full">
+                    Violation Reporting
+                  </Button>
+                </Link>
+                <Link href="/traffic-accidents">
+                  <Button className="bg-red-600 hover:bg-red-700 text-white w-full">
+                    Accident Emergency
+                  </Button>
+                </Link>
+                <Link href="/traffic-monitor">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">
+                    Live Monitoring
+                  </Button>
+                </Link>
+                <Link href="/vehicle-tracking">
+                  <Button className="bg-green-600 hover:bg-green-700 text-white w-full">
+                    Vehicle Tracking
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>
