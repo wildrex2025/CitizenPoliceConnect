@@ -91,9 +91,118 @@ export const sosAlerts = pgTable("sos_alerts", {
   userId: integer("user_id").references(() => users.id),
   location: json("location").notNull(),
   status: varchar("status", { length: 20 }).notNull().default('active'), // 'active', 'responded', 'false_alarm', 'resolved'
+  alertType: varchar("alert_type", { length: 30 }).notNull().default('general'), // 'general', 'women_safety', 'child_emergency', 'medical', 'silent'
+  isVoiceActivated: boolean("is_voice_activated").default(false),
+  isSilentAlert: boolean("is_silent_alert").default(false),
+  audioRecording: text("audio_recording"), // URL to audio file
+  medicalInfo: json("medical_info"), // blood group, medical conditions
   respondingOfficerId: integer("responding_officer_id").references(() => policeOfficers.id),
   createdAt: timestamp("created_at").defaultNow(),
   respondedAt: timestamp("responded_at"),
+});
+
+// Women Safety Module
+export const womenSafetyReports = pgTable("women_safety_reports", {
+  id: serial("id").primaryKey(),
+  reporterId: integer("reporter_id").references(() => users.id),
+  incidentType: varchar("incident_type", { length: 50 }).notNull(), // 'harassment', 'stalking', 'inappropriate_behavior', 'unsafe_area'
+  location: json("location").notNull(),
+  description: text("description").notNull(),
+  timeOfIncident: timestamp("time_of_incident").notNull(),
+  severityLevel: varchar("severity_level", { length: 20 }).notNull(), // 'low', 'medium', 'high', 'critical'
+  status: varchar("status", { length: 20 }).notNull().default('reported'), // 'reported', 'investigating', 'resolved', 'closed'
+  isAnonymous: boolean("is_anonymous").default(false),
+  attachments: json("attachments").default([]),
+  assignedOfficerId: integer("assigned_officer_id").references(() => policeOfficers.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const safeRoutes = pgTable("safe_routes", {
+  id: serial("id").primaryKey(),
+  routeName: text("route_name").notNull(),
+  startLocation: json("start_location").notNull(),
+  endLocation: json("end_location").notNull(),
+  waypoints: json("waypoints").default([]),
+  safetyRating: integer("safety_rating").notNull(), // 1-5 scale
+  timeOfDay: varchar("time_of_day", { length: 20 }).notNull(), // 'morning', 'afternoon', 'evening', 'night'
+  features: json("features").default([]), // ['well_lit', 'cctv_coverage', 'police_patrol', 'crowded_area']
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  isActive: boolean("is_active").default(true),
+});
+
+// Child Protection Module
+export const childSafetyAlerts = pgTable("child_safety_alerts", {
+  id: serial("id").primaryKey(),
+  childId: integer("child_id").notNull(),
+  parentId: integer("parent_id").references(() => users.id),
+  childName: text("child_name").notNull(),
+  childAge: integer("child_age").notNull(),
+  alertType: varchar("alert_type", { length: 30 }).notNull(), // 'missing', 'route_deviation', 'cyber_bullying', 'unsafe_contact'
+  location: json("location"),
+  expectedLocation: json("expected_location"),
+  description: text("description"),
+  status: varchar("status", { length: 20 }).notNull().default('active'), // 'active', 'investigating', 'found', 'resolved'
+  priority: varchar("priority", { length: 20 }).notNull().default('high'), // 'medium', 'high', 'critical'
+  lastSeenAt: timestamp("last_seen_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const childRouteTracking = pgTable("child_route_tracking", {
+  id: serial("id").primaryKey(),
+  childId: integer("child_id").notNull(),
+  parentId: integer("parent_id").references(() => users.id),
+  routeName: text("route_name").notNull(), // 'school_to_home', 'home_to_tuition'
+  expectedRoute: json("expected_route").notNull(),
+  currentLocation: json("current_location"),
+  isOnRoute: boolean("is_on_route").default(true),
+  alertThreshold: integer("alert_threshold").default(100), // meters
+  isActive: boolean("is_active").default(true),
+  lastUpdate: timestamp("last_update").defaultNow(),
+});
+
+// Cyber Crime Module
+export const cyberCrimeReports = pgTable("cyber_crime_reports", {
+  id: serial("id").primaryKey(),
+  reporterId: integer("reporter_id").references(() => users.id),
+  crimeType: varchar("crime_type", { length: 50 }).notNull(), // 'phishing', 'online_fraud', 'identity_theft', 'cyberbullying', 'fake_news'
+  platform: varchar("platform", { length: 50 }), // 'whatsapp', 'facebook', 'instagram', 'email', 'website'
+  suspiciousUrl: text("suspicious_url"),
+  description: text("description").notNull(),
+  financialLoss: integer("financial_loss").default(0),
+  evidence: json("evidence").default([]), // screenshots, chat logs, etc.
+  status: varchar("status", { length: 20 }).notNull().default('reported'),
+  priority: varchar("priority", { length: 20 }).notNull().default('medium'),
+  assignedOfficerId: integer("assigned_officer_id").references(() => policeOfficers.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Community Policing
+export const neighborhoodWatch = pgTable("neighborhood_watch", {
+  id: serial("id").primaryKey(),
+  groupName: text("group_name").notNull(),
+  coordinatorId: integer("coordinator_id").references(() => users.id),
+  area: json("area").notNull(), // polygon coordinates
+  members: json("members").default([]), // array of user IDs
+  description: text("description"),
+  meetingSchedule: varchar("meeting_schedule", { length: 100 }),
+  contactNumber: varchar("contact_number", { length: 15 }),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const communityReports = pgTable("community_reports", {
+  id: serial("id").primaryKey(),
+  reporterId: integer("reporter_id").references(() => users.id),
+  watchGroupId: integer("watch_group_id").references(() => neighborhoodWatch.id),
+  reportType: varchar("report_type", { length: 50 }).notNull(), // 'suspicious_activity', 'safety_concern', 'maintenance_issue'
+  location: json("location").notNull(),
+  description: text("description").notNull(),
+  urgency: varchar("urgency", { length: 20 }).notNull().default('medium'), // 'low', 'medium', 'high'
+  status: varchar("status", { length: 20 }).notNull().default('reported'),
+  attachments: json("attachments").default([]),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Insert schemas
@@ -133,6 +242,45 @@ export const insertSosAlertSchema = createInsertSchema(sosAlerts).omit({
   respondingOfficerId: true,
 });
 
+export const insertWomenSafetyReportSchema = createInsertSchema(womenSafetyReports).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  assignedOfficerId: true,
+});
+
+export const insertSafeRouteSchema = createInsertSchema(safeRoutes).omit({
+  id: true,
+  lastUpdated: true,
+});
+
+export const insertChildSafetyAlertSchema = createInsertSchema(childSafetyAlerts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertChildRouteTrackingSchema = createInsertSchema(childRouteTracking).omit({
+  id: true,
+  lastUpdate: true,
+});
+
+export const insertCyberCrimeReportSchema = createInsertSchema(cyberCrimeReports).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  assignedOfficerId: true,
+});
+
+export const insertNeighborhoodWatchSchema = createInsertSchema(neighborhoodWatch).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertCommunityReportSchema = createInsertSchema(communityReports).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -155,6 +303,27 @@ export type SosAlert = typeof sosAlerts.$inferSelect;
 export type PoliceOfficer = typeof policeOfficers.$inferSelect;
 export type EmergencyContact = typeof emergencyContacts.$inferSelect;
 
+export type InsertWomenSafetyReport = z.infer<typeof insertWomenSafetyReportSchema>;
+export type WomenSafetyReport = typeof womenSafetyReports.$inferSelect;
+
+export type InsertSafeRoute = z.infer<typeof insertSafeRouteSchema>;
+export type SafeRoute = typeof safeRoutes.$inferSelect;
+
+export type InsertChildSafetyAlert = z.infer<typeof insertChildSafetyAlertSchema>;
+export type ChildSafetyAlert = typeof childSafetyAlerts.$inferSelect;
+
+export type InsertChildRouteTracking = z.infer<typeof insertChildRouteTrackingSchema>;
+export type ChildRouteTracking = typeof childRouteTracking.$inferSelect;
+
+export type InsertCyberCrimeReport = z.infer<typeof insertCyberCrimeReportSchema>;
+export type CyberCrimeReport = typeof cyberCrimeReports.$inferSelect;
+
+export type InsertNeighborhoodWatch = z.infer<typeof insertNeighborhoodWatchSchema>;
+export type NeighborhoodWatch = typeof neighborhoodWatch.$inferSelect;
+
+export type InsertCommunityReport = z.infer<typeof insertCommunityReportSchema>;
+export type CommunityReport = typeof communityReports.$inferSelect;
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   complaints: many(complaints),
@@ -162,6 +331,12 @@ export const usersRelations = relations(users, ({ many }) => ({
   trafficViolations: many(trafficViolations),
   feedback: many(feedback),
   sosAlerts: many(sosAlerts),
+  womenSafetyReports: many(womenSafetyReports),
+  childSafetyAlerts: many(childSafetyAlerts),
+  childRouteTracking: many(childRouteTracking),
+  cyberCrimeReports: many(cyberCrimeReports),
+  neighborhoodWatch: many(neighborhoodWatch),
+  communityReports: many(communityReports),
 }));
 
 export const complaintsRelations = relations(complaints, ({ one, many }) => ({
@@ -224,5 +399,60 @@ export const sosAlertsRelations = relations(sosAlerts, ({ one }) => ({
   respondingOfficer: one(policeOfficers, {
     fields: [sosAlerts.respondingOfficerId],
     references: [policeOfficers.id],
+  }),
+}));
+
+export const womenSafetyReportsRelations = relations(womenSafetyReports, ({ one }) => ({
+  reporter: one(users, {
+    fields: [womenSafetyReports.reporterId],
+    references: [users.id],
+  }),
+  assignedOfficer: one(policeOfficers, {
+    fields: [womenSafetyReports.assignedOfficerId],
+    references: [policeOfficers.id],
+  }),
+}));
+
+export const childSafetyAlertsRelations = relations(childSafetyAlerts, ({ one }) => ({
+  parent: one(users, {
+    fields: [childSafetyAlerts.parentId],
+    references: [users.id],
+  }),
+}));
+
+export const childRouteTrackingRelations = relations(childRouteTracking, ({ one }) => ({
+  parent: one(users, {
+    fields: [childRouteTracking.parentId],
+    references: [users.id],
+  }),
+}));
+
+export const cyberCrimeReportsRelations = relations(cyberCrimeReports, ({ one }) => ({
+  reporter: one(users, {
+    fields: [cyberCrimeReports.reporterId],
+    references: [users.id],
+  }),
+  assignedOfficer: one(policeOfficers, {
+    fields: [cyberCrimeReports.assignedOfficerId],
+    references: [policeOfficers.id],
+  }),
+}));
+
+export const neighborhoodWatchRelations = relations(neighborhoodWatch, ({ one, many }) => ({
+  coordinator: one(users, {
+    fields: [neighborhoodWatch.coordinatorId],
+    references: [users.id],
+  }),
+  communityReports: many(communityReports),
+}));
+
+export const communityReportsRelations = relations(communityReports, ({ one }) => ({
+  reporter: one(users, {
+    fields: [communityReports.reporterId],
+    references: [users.id],
+  }),
+  watchGroup: one(neighborhoodWatch, {
+    fields: [communityReports.watchGroupId],
+    references: [neighborhoodWatch.id],
   }),
 }));
