@@ -15,12 +15,23 @@ import {
   Clock
 } from "lucide-react";
 
+interface DashboardData {
+  totalIncidents: number;
+  activeEmergencies: number;
+  womenSafetyReports: number;
+  childSafetyAlerts: number;
+  cyberCrimeReports: number;
+  crimeAnalysis: any;
+  summary: any;
+  recentIncidents: any[];
+}
+
 export default function AnalyticsDashboard() {
-  const { data: dashboardData, isLoading } = useQuery({
+  const { data: dashboardData, isLoading } = useQuery<DashboardData>({
     queryKey: ["/api/analytics/dashboard"],
   });
 
-  const { data: crimeHeatmap } = useQuery({
+  const { data: crimeHeatmap } = useQuery<any[]>({
     queryKey: ["/api/analytics/crime-heatmap"],
   });
 

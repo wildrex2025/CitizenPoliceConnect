@@ -59,9 +59,17 @@ export default function TrafficGuard() {
     queryKey: ["/api/traffic/violations"],
   });
 
+  interface ViolationResponse {
+    aiAnalysis?: {
+      violationType?: string;
+      confidence?: number;
+    };
+    rewardPoints?: number;
+  }
+
   const submitViolationMutation = useMutation({
     mutationFn: (data: any) => apiRequest("/api/traffic/violations", "POST", data),
-    onSuccess: (response) => {
+    onSuccess: (response: ViolationResponse) => {
       queryClient.invalidateQueries({ queryKey: ["/api/traffic/violations"] });
       queryClient.invalidateQueries({ queryKey: ["/api/traffic/rewards/1"] });
       
@@ -71,7 +79,7 @@ export default function TrafficGuard() {
       });
       
       // Show reward points earned
-      if (response.rewardPoints > 0) {
+      if (response.rewardPoints && response.rewardPoints > 0) {
         toast({
           title: `+${response.rewardPoints} Points Earned!`,
           description: "Thank you for helping keep our roads safe."

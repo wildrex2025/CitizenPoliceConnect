@@ -620,11 +620,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...sosAlerts.map(s => ({ ...s, type: 'emergency' }))
       ];
 
-      // AI-powered crime pattern analysis
-      const crimeAnalysis = await aiService.analyzeCrimePattern(allIncidents);
+      // AI-powered crime pattern analysis with fallback
+      let crimeAnalysis: any = { 
+        hotspots: [], 
+        patterns: [], 
+        riskLevel: "medium",
+        timePatterns: {},
+        predictions: {}
+      };
+      let summary: any = { 
+        overview: "Dashboard data loaded successfully", 
+        trends: [],
+        insights: []
+      };
       
-      // Generate incident summary
-      const summary = await aiService.generateIncidentSummary(allIncidents);
+      try {
+        const analysisResult = await aiService.analyzeCrimePattern(allIncidents);
+        crimeAnalysis = {
+          hotspots: analysisResult.hotspots || [],
+          patterns: analysisResult.patterns || [],
+          riskLevel: analysisResult.riskLevel || "medium",
+          timePatterns: analysisResult.timePatterns || {},
+          predictions: analysisResult.predictions || {}
+        };
+        
+        const summaryResult = await aiService.generateIncidentSummary(allIncidents);
+        summary = typeof summaryResult === 'string' 
+          ? { overview: summaryResult, trends: [], insights: [] }
+          : summaryResult;
+      } catch (error) {
+        console.warn("AI service unavailable, using default analysis");
+      }
 
       const dashboardData = {
         totalIncidents: allIncidents.length,
@@ -665,17 +691,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const violationData = insertAdvancedTrafficViolationSchema.parse(req.body);
       
       // AI-powered violation analysis
-      let aiAnalysis = {};
+      let aiAnalysis: any = { confidence: 0, violations: [], description: "" };
       let rewardPoints = 0;
       
-      if (violationData.evidencePhotos && violationData.evidencePhotos.length > 0) {
-        aiAnalysis = await trafficAIService.analyzeTrafficViolation(
-          violationData.evidencePhotos[0],
-          violationData.description
-        );
-        
-        // Calculate reward points based on AI confidence and violation type
-        rewardPoints = Math.floor((aiAnalysis.confidence || 0) / 10);
+      if (violationData.evidencePhotos && Array.isArray(violationData.evidencePhotos) && violationData.evidencePhotos.length > 0) {
+        try {
+          aiAnalysis = await trafficAIService.analyzeTrafficViolation(
+            violationData.evidencePhotos[0],
+            violationData.description
+          );
+          
+          // Calculate reward points based on AI confidence and violation type
+          const confidence = typeof aiAnalysis.confidence === 'number' ? aiAnalysis.confidence : 0;
+          rewardPoints = Math.floor(confidence / 10);
+        } catch (error) {
+          console.warn("AI analysis failed, using default values");
+          aiAnalysis = { confidence: 0, violations: [], description: "Analysis unavailable" };
+        }
       }
       
       const violation = {
