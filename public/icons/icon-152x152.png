@@ -1,0 +1,12 @@
+<svg width="152" height="152" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#0079F2;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#00A8FF;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect width="152" height="152" fill="url(#grad)" rx="19" />
+    <circle cx="76" cy="50" r="25" fill="white" />
+    <rect x="38" y="101" width="76" height="25" fill="white" rx="12" />
+    <text x="76" y="126" font-family="Arial" font-size="12" text-anchor="middle" fill="white" font-weight="bold">TG</text>
+  </svg>
