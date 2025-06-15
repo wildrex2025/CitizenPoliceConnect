@@ -181,8 +181,55 @@ export default function AnalyticsDashboard() {
           <CardContent>
             <div className="prose dark:prose-invert max-w-none">
               {dashboardData?.summary ? (
-                <div className="text-sm leading-relaxed whitespace-pre-line">
-                  {dashboardData.summary}
+                <div className="space-y-4">
+                  {/* Overview Section */}
+                  {dashboardData.summary.overview && (
+                    <div className="text-sm leading-relaxed">
+                      <h5 className="font-medium mb-2">Overview</h5>
+                      <p className="text-gray-700 dark:text-gray-300">
+                        {typeof dashboardData.summary.overview === 'string' 
+                          ? dashboardData.summary.overview 
+                          : 'Dashboard data loaded successfully'}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Trends Section */}
+                  {dashboardData.summary.trends && Array.isArray(dashboardData.summary.trends) && dashboardData.summary.trends.length > 0 && (
+                    <div className="text-sm">
+                      <h5 className="font-medium mb-2">Key Trends</h5>
+                      <ul className="space-y-1 text-gray-700 dark:text-gray-300">
+                        {dashboardData.summary.trends.map((trend: string, index: number) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="text-blue-500 mt-1">•</span>
+                            {trend}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Insights Section */}
+                  {dashboardData.summary.insights && Array.isArray(dashboardData.summary.insights) && dashboardData.summary.insights.length > 0 && (
+                    <div className="text-sm">
+                      <h5 className="font-medium mb-2">AI Insights</h5>
+                      <ul className="space-y-1 text-gray-700 dark:text-gray-300">
+                        {dashboardData.summary.insights.map((insight: string, index: number) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="text-green-500 mt-1">•</span>
+                            {insight}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {/* Fallback if summary is a string */}
+                  {typeof dashboardData.summary === 'string' && (
+                    <div className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+                      {dashboardData.summary}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400 text-center py-8">
