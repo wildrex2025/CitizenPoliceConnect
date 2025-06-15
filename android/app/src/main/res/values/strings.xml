@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AhilyaNagar TrafficGuard Pro</string>
+    <string name="title_activity_main">AhilyaNagar TrafficGuard Pro</string>
+    <string name="package_name">com.ahilyanagar.trafficguard</string>
+    <string name="custom_url_scheme">com.ahilyanagar.trafficguard</string>
+</resources>

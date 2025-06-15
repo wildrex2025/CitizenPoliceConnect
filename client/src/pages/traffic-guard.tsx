@@ -27,9 +27,11 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useCapacitor } from "@/hooks/useCapacitor";
 
 export default function TrafficGuard() {
   const { t } = useLanguage();
+  const { isNative, takePicture, getCurrentLocation, triggerHaptic } = useCapacitor();
   const [isReporting, setIsReporting] = useState(false);
   const [selectedViolationType, setSelectedViolationType] = useState("");
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
