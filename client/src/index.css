@@ -2,6 +2,191 @@
 @tailwind components;
 @tailwind utilities;
 
+/* PWA-specific styles */
+:root {
+  --pwa-primary: #0079F2;
+  --pwa-secondary: #00A8FF;
+  --offline-color: #ff6b6b;
+  --online-color: #51cf66;
+}
+
+/* Offline indicator styles */
+.offline::before {
+  content: "📡 Offline Mode - Some features may be limited";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--offline-color);
+  color: white;
+  text-align: center;
+  padding: 8px;
+  font-size: 14px;
+  z-index: 9999;
+  animation: slideDown 0.3s ease-out;
+}
+
+.offline {
+  padding-top: 40px;
+}
+
+/* PWA install button animations */
+#pwa-install-btn {
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+#pwa-install-btn:hover {
+  background: #0066CC !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 121, 242, 0.4) !important;
+}
+
+/* Loading states for PWA */
+.pwa-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.pwa-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pwa-primary), transparent);
+  animation: loading 1.5s infinite;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Mobile-first responsive design for PWA */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Touch-friendly buttons */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Larger tap targets for mobile */
+  .mobile-tap-target {
+    padding: 12px;
+    margin: 4px;
+  }
+}
+
+/* Dark mode adjustments for PWA */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pwa-primary: #4A9EFF;
+    --pwa-secondary: #66B3FF;
+  }
+}
+
+/* Standalone PWA styles */
+@media (display-mode: standalone) {
+  body {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Hide browser UI elements that might appear */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--pwa-primary);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--pwa-secondary);
+  }
+}
+
+/* Splash screen styling */
+.pwa-splash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--pwa-primary), var(--pwa-secondary));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 10000;
+}
+
+.pwa-splash.fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* PWA notification styles */
+.pwa-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  max-width: 300px;
+  z-index: 9998;
+  border-left: 4px solid var(--pwa-primary);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(20, 14.3%, 4.1%);

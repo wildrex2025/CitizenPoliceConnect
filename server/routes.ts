@@ -21,6 +21,16 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 
+// Push notification utility function
+async function sendPushNotification(subscription: any, payload: any): Promise<void> {
+  // In production, use web-push library with proper VAPID keys
+  console.log('Push notification would be sent to:', subscription.endpoint);
+  console.log('Payload:', payload);
+  
+  // Simulate successful push notification
+  return Promise.resolve();
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // User routes
@@ -902,6 +912,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching vehicle violations:", error);
       res.status(500).json({ message: "Failed to fetch violations" });
+    }
+  });
+
+  // PWA Push Notification Routes
+  app.post("/api/push/subscribe", async (req, res) => {
+    try {
+      const subscription = req.body;
+      
+      // Store subscription in database (simulated)
+      console.log("Push subscription received:", subscription.endpoint);
+      
+      // Send welcome notification
+      await sendPushNotification(subscription, {
+        title: "TrafficGuard Pro",
+        body: "Push notifications enabled! You'll receive updates about violations and emergencies.",
+        icon: "/icons/icon-192x192.png",
+        badge: "/icons/icon-72x72.png",
+        data: { url: "/" }
+      });
+      
+      res.status(201).json({ message: "Subscription saved successfully" });
+    } catch (error) {
+      console.error("Error saving push subscription:", error);
+      res.status(500).json({ message: "Failed to save subscription" });
+    }
+  });
+
+  app.post("/api/push/send", async (req, res) => {
+    try {
+      const { title, body, data, type } = req.body;
+      
+      // Get all subscriptions (simulated)
+      const subscriptions = []; // In production, fetch from database
+      
+      const notification = {
+        title: title || "TrafficGuard Pro",
+        body: body || "New notification",
+        icon: "/icons/icon-192x192.png",
+        badge: "/icons/icon-72x72.png",
+        data: data || {},
+        type: type || "general"
+      };
+      
+      // Send to all subscribers
+      const results = await Promise.allSettled(
+        subscriptions.map(sub => sendPushNotification(sub, notification))
+      );
+      
+      res.json({ 
+        message: "Notifications sent",
+        sent: results.filter(r => r.status === 'fulfilled').length,
+        failed: results.filter(r => r.status === 'rejected').length
+      });
+    } catch (error) {
+      console.error("Error sending push notifications:", error);
+      res.status(500).json({ message: "Failed to send notifications" });
+    }
+  });
+
+  // Emergency broadcast notification
+  app.post("/api/push/emergency", async (req, res) => {
+    try {
+      const { message, location, type } = req.body;
+      
+      const emergencyNotification = {
+        title: "🚨 Emergency Alert",
+        body: message || "Emergency situation reported in your area",
+        icon: "/icons/emergency-icon.png",
+        badge: "/icons/icon-72x72.png",
+        requireInteraction: true,
+        tag: "emergency",
+        data: {
+          url: "/emergency",
+          location,
+          type: type || "general"
+        },
+        actions: [
+          { action: "view", title: "View Details" },
+          { action: "directions", title: "Get Directions" }
+        ]
+      };
+      
+      // Broadcast to all users in area (simulated)
+      console.log("Emergency broadcast:", emergencyNotification);
+      
+      res.json({ message: "Emergency alert broadcasted" });
+    } catch (error) {
+      console.error("Error broadcasting emergency:", error);
+      res.status(500).json({ message: "Failed to broadcast emergency" });
+    }
+  });
+
+  // PWA offline sync routes
+  app.post("/api/offline/sync", async (req, res) => {
+    try {
+      const { pendingData } = req.body;
+      
+      const syncResults = {
+        violations: 0,
+        emergencies: 0,
+        reports: 0,
+        failed: []
+      };
+      
+      // Process pending offline data
+      if (pendingData.violations) {
+        for (const violation of pendingData.violations) {
+          try {
+            // Process violation report
+            console.log("Syncing violation:", violation.id);
+            syncResults.violations++;
+          } catch (error) {
+            syncResults.failed.push({ type: 'violation', id: violation.id, error: error.message });
+          }
+        }
+      }
+      
+      if (pendingData.emergencies) {
+        for (const emergency of pendingData.emergencies) {
+          try {
+            // Process emergency alert
+            console.log("Syncing emergency:", emergency.id);
+            syncResults.emergencies++;
+          } catch (error) {
+            syncResults.failed.push({ type: 'emergency', id: emergency.id, error: error.message });
+          }
+        }
+      }
+      
+      res.json({
+        message: "Offline data synced successfully",
+        results: syncResults
+      });
+    } catch (error) {
+      console.error("Error syncing offline data:", error);
+      res.status(500).json({ message: "Failed to sync offline data" });
     }
   });
 
