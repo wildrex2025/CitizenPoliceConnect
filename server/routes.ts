@@ -33,25 +33,121 @@ async function sendPushNotification(subscription: any, payload: any): Promise<vo
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Serve service worker file directly
+  // Serve service worker with inline content
   app.get('/sw.js', (req, res) => {
-    try {
-      const path = require('path');
-      const fs = require('fs');
-      const swPath = path.resolve(process.cwd(), 'public', 'sw.js');
-      
-      if (fs.existsSync(swPath)) {
-        res.setHeader('Content-Type', 'application/javascript');
-        res.setHeader('Service-Worker-Allowed', '/');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.sendFile(swPath);
-      } else {
-        res.status(404).send('Service worker not found');
+    res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
+    const swContent = `
+const CACHE_NAME = 'trafficguard-pro-v1';
+const STATIC_CACHE = 'static-cache-v1';
+const DYNAMIC_CACHE = 'dynamic-cache-v1';
+
+// Install event
+self.addEventListener('install', (event) => {
+  console.log('Service Worker: Installing');
+  event.waitUntil(self.skipWaiting());
+});
+
+// Activate event
+self.addEventListener('activate', (event) => {
+  console.log('Service Worker: Activating');
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
+// Fetch event
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-HTTP requests
+  if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // Handle API requests
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          const responseClone = response.clone();
+          if (response.ok) {
+            caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(error => {
+          console.log('Fetch failed, trying cache:', error);
+          return caches.match(request).then(response => {
+            return response || new Response('Offline', { status: 503 });
+          });
+        })
+    );
+    return;
+  }
+
+  // Handle static assets
+  event.respondWith(
+    caches.match(request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
+        
+        return fetch(request).then(response => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          
+          const responseToCache = response.clone();
+          caches.open(STATIC_CACHE).then(cache => {
+            cache.put(request, responseToCache);
+          });
+          
+          return response;
+        });
+      })
+  );
+});
+
+// Background sync
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'background-sync') {
+    event.waitUntil(syncOfflineData());
+  }
+});
+
+async function syncOfflineData() {
+  try {
+    const cache = await caches.open(DYNAMIC_CACHE);
+    const requests = await cache.keys();
+    
+    for (const request of requests) {
+      if (request.url.includes('/api/')) {
+        await fetch(request);
       }
-    } catch (error) {
-      console.error('Error serving service worker:', error);
-      res.status(500).send('Internal server error');
     }
+  } catch (error) {
+    console.error('Background sync failed:', error);
+  }
+}
+    `;
+    
+    res.send(swContent);
   });
 
   // Serve manifest file
