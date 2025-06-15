@@ -278,15 +278,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // AI-powered fake emergency detection
       const fakeDetection = await aiService.detectFakeEmergency(alertData);
       
-      // Create alert with fraud detection metadata
-      const alert = await storage.createSosAlert({
-        ...alertData,
-        // Store fraud detection in medical info for now
-        medicalInfo: { 
-          ...alertData.medicalInfo, 
-          fraudDetection: fakeDetection 
-        }
-      });
+      // Create alert
+      const alert = await storage.createSosAlert(alertData);
       
       // Send SMS alert if not detected as fake or low confidence
       if (!fakeDetection.isFake || fakeDetection.confidence < 70) {
@@ -296,7 +289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             await twilioService.sendEmergencyAlert(
               user.phone,
               alertData.location,
-              alertData.alertType
+              alertData.alertType || 'general'
             );
           }
         }
@@ -398,9 +391,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/safe-routes", async (req, res) => {
     try {
-      const { timeOfDay } = req.query;
+      const { timeOfDay, startLat, startLng, endLat, endLng } = req.query;
       const routes = await storage.getSafeRoutes(timeOfDay as string);
-      res.json(routes);
+      
+      // Generate AI-powered route recommendations if coordinates provided
+      if (startLat && startLng && endLat && endLng) {
+        const aiRecommendations = await aiService.generateSafeRouteRecommendations(
+          { lat: parseFloat(startLat as string), lng: parseFloat(startLng as string) },
+          { lat: parseFloat(endLat as string), lng: parseFloat(endLng as string) },
+          timeOfDay as string || 'evening'
+        );
+        res.json({ routes, aiRecommendations });
+      } else {
+        res.json(routes);
+      }
     } catch (error) {
       console.error("Error fetching safe routes:", error);
       res.status(500).json({ message: "Failed to fetch safe routes" });
@@ -412,6 +416,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const alertData = insertChildSafetyAlertSchema.parse(req.body);
       const alert = await storage.createChildSafetyAlert(alertData);
+      
+      // Send SMS notification for child safety alerts
+      if (alertData.parentId) {
+        const parent = await storage.getUser(alertData.parentId);
+        if (parent?.phone) {
+          await twilioService.sendChildSafetyAlert(
+            parent.phone,
+            alertData.childName,
+            alertData.alertType,
+            alertData.location
+          );
+        }
+      }
+      
       res.status(201).json(alert);
     } catch (error) {
       console.error("Error creating child safety alert:", error);
@@ -439,8 +457,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/cyber-crime/reports", async (req, res) => {
     try {
       const reportData = insertCyberCrimeReportSchema.parse(req.body);
-      const report = await storage.createCyberCrimeReport(reportData);
-      res.status(201).json(report);
+      
+      // AI-powered cyber threat analysis
+      const threatAnalysis = await aiService.detectCyberthreat(
+        reportData.suspiciousUrl || '',
+        reportData.description
+      );
+      
+      // Enhanced report with AI analysis
+      const enhancedReportData = {
+        ...reportData,
+        priority: threatAnalysis.isThreat ? 'high' : reportData.priority || 'medium'
+      };
+      
+      const report = await storage.createCyberCrimeReport(enhancedReportData);
+      
+      res.status(201).json({ report, threatAnalysis });
     } catch (error) {
       console.error("Error creating cyber crime report:", error);
       res.status(400).json({ message: "Invalid report data" });
@@ -493,6 +525,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating community report:", error);
       res.status(400).json({ message: "Invalid report data" });
+    }
+  });
+
+  // Analytics and AI Dashboard routes
+  app.get("/api/analytics/dashboard", async (req, res) => {
+    try {
+      const [complaints, womenSafetyReports, childAlerts, cyberReports, sosAlerts] = await Promise.all([
+        storage.getAllComplaints(),
+        storage.getWomenSafetyReports(),
+        storage.getActiveChildSafetyAlerts(),
+        storage.getCyberCrimeReports(),
+        storage.getActiveSosAlerts()
+      ]);
+
+      const allIncidents = [
+        ...complaints.map(c => ({ ...c, type: 'complaint' })),
+        ...womenSafetyReports.map(w => ({ ...w, type: 'women_safety' })),
+        ...childAlerts.map(ch => ({ ...ch, type: 'child_safety' })),
+        ...cyberReports.map(cy => ({ ...cy, type: 'cyber_crime' })),
+        ...sosAlerts.map(s => ({ ...s, type: 'emergency' }))
+      ];
+
+      // AI-powered crime pattern analysis
+      const crimeAnalysis = await aiService.analyzeCrimePattern(allIncidents);
+      
+      // Generate incident summary
+      const summary = await aiService.generateIncidentSummary(allIncidents);
+
+      const dashboardData = {
+        totalIncidents: allIncidents.length,
+        activeEmergencies: sosAlerts.length,
+        womenSafetyReports: womenSafetyReports.length,
+        childSafetyAlerts: childAlerts.length,
+        cyberCrimeReports: cyberReports.length,
+        crimeAnalysis,
+        summary,
+        recentIncidents: allIncidents.slice(0, 10)
+      };
+
+      res.json(dashboardData);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard data" });
+    }
+  });
+
+  app.get("/api/analytics/crime-heatmap", async (req, res) => {
+    try {
+      const complaints = await storage.getAllComplaints();
+      const womenReports = await storage.getWomenSafetyReports();
+      
+      const incidents = [...complaints, ...womenReports];
+      const crimeAnalysis = await aiService.analyzeCrimePattern(incidents);
+      
+      res.json(crimeAnalysis.hotspots || []);
+    } catch (error) {
+      console.error("Error generating crime heatmap:", error);
+      res.status(500).json({ message: "Failed to generate heatmap" });
     }
   });
 
