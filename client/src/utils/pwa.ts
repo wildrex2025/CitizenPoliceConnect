@@ -157,12 +157,13 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
 // Show local notification
 export function showLocalNotification(title: string, options: NotificationOptions = {}): void {
   if (Notification.permission === 'granted') {
-    const notification = new Notification(title, {
+    const notificationOptions: NotificationOptions = {
       icon: '/icons/icon-192x192.png',
       badge: '/icons/icon-72x72.png',
-      vibrate: [200, 100, 200],
       ...options
-    });
+    };
+    
+    const notification = new Notification(title, notificationOptions);
 
     // Auto close after 5 seconds
     setTimeout(() => {
@@ -224,7 +225,11 @@ export async function getOfflineData(storeName: string): Promise<any[]> {
     const transaction = db.transaction([storeName], 'readonly');
     const store = transaction.objectStore(storeName);
     
-    return await store.getAll();
+    const request = store.getAll();
+    return new Promise((resolve, reject) => {
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
   } catch (error) {
     console.error('Failed to retrieve offline data:', error);
     return [];
@@ -353,11 +358,7 @@ function showUpdateAvailableNotification(): void {
   showLocalNotification('App Update Available', {
     body: 'A new version of TrafficGuard Pro is available. Refresh to update.',
     tag: 'app-update',
-    requireInteraction: true,
-    actions: [
-      { action: 'update', title: 'Update Now' },
-      { action: 'dismiss', title: 'Later' }
-    ]
+    requireInteraction: true
   });
 }
 
