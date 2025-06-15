@@ -7,6 +7,7 @@ import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { useEffect } from "react";
 import { registerServiceWorker, initializeInstallPrompt, requestNotificationPermission } from "@/utils/pwa";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { Navigation } from "@/components/Navigation";
 import Home from "@/pages/home";
 import WomenSafety from "@/pages/women-safety";
 import ChildSafety from "@/pages/child-safety";
@@ -47,6 +48,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <TooltipProvider>
+          <Navigation />
           <Toaster />
           <Router />
           <PWAInstallPrompt />

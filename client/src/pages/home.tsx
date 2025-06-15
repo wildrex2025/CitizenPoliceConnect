@@ -18,38 +18,45 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function Home() {
+  const { t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto p-6">
+        {/* Language Switcher */}
+        <div className="flex justify-end mb-4">
+          <LanguageSwitcher />
+        </div>
+        
         {/* Header */}
         <div className="text-center py-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            अहिल्यानगर पोलीस नागरिक सेवा
+            {t('app.title')}
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">
-            Ahilyangara Police Citizen Services
+            {t('app.subtitle')}
           </p>
           <p className="text-gray-500 dark:text-gray-400">
-            Your safety and security is our priority
+            {t('app.description')}
           </p>
         </div>
 
         {/* Emergency Services */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
-            आपत्कालीन सेवा | Emergency Services
+            {t('emergency.title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 hover:shadow-lg transition-shadow">
               <CardContent className="p-6 text-center">
                 <Shield className="h-12 w-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
-                <h3 className="font-bold text-red-800 dark:text-red-300 mb-2">SOS Emergency</h3>
+                <h3 className="font-bold text-red-800 dark:text-red-300 mb-2">{t('emergency.title')}</h3>
                 <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-                  Voice-activated emergency with AI verification
+                  {t('emergency.description')}
                 </p>
                 <Link href="/emergency">
                   <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
-                    Emergency System
+                    {t('emergency.panic_button')}
                   </Button>
                 </Link>
               </CardContent>

@@ -25,8 +25,11 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function TrafficGuard() {
+  const { t } = useLanguage();
   const [isReporting, setIsReporting] = useState(false);
   const [selectedViolationType, setSelectedViolationType] = useState("");
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
