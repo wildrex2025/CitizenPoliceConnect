@@ -33,6 +33,67 @@ async function sendPushNotification(subscription: any, payload: any): Promise<vo
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Serve service worker file directly
+  app.get('/sw.js', (req, res) => {
+    try {
+      const path = require('path');
+      const fs = require('fs');
+      const swPath = path.resolve(process.cwd(), 'public', 'sw.js');
+      
+      if (fs.existsSync(swPath)) {
+        res.setHeader('Content-Type', 'application/javascript');
+        res.setHeader('Service-Worker-Allowed', '/');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.sendFile(swPath);
+      } else {
+        res.status(404).send('Service worker not found');
+      }
+    } catch (error) {
+      console.error('Error serving service worker:', error);
+      res.status(500).send('Internal server error');
+    }
+  });
+
+  // Serve manifest file
+  app.get('/manifest.json', (req, res) => {
+    try {
+      const path = require('path');
+      const fs = require('fs');
+      const manifestPath = path.resolve(process.cwd(), 'public', 'manifest.json');
+      
+      if (fs.existsSync(manifestPath)) {
+        res.setHeader('Content-Type', 'application/json');
+        res.sendFile(manifestPath);
+      } else {
+        res.status(404).send('Manifest not found');
+      }
+    } catch (error) {
+      console.error('Error serving manifest:', error);
+      res.status(500).send('Internal server error');
+    }
+  });
+
+  // Serve PWA icons
+  app.get('/icons/:iconName', (req, res) => {
+    try {
+      const path = require('path');
+      const fs = require('fs');
+      const iconPath = path.resolve(process.cwd(), 'public', 'icons', req.params.iconName);
+      
+      if (fs.existsSync(iconPath)) {
+        const ext = path.extname(iconPath).toLowerCase();
+        const contentType = ext === '.svg' ? 'image/svg+xml' : 'image/png';
+        res.setHeader('Content-Type', contentType);
+        res.sendFile(iconPath);
+      } else {
+        res.status(404).send('Icon not found');
+      }
+    } catch (error) {
+      console.error('Error serving icon:', error);
+      res.status(500).send('Internal server error');
+    }
+  });
+
   // User routes
   app.post("/api/users", async (req, res) => {
     try {
