@@ -94,9 +94,9 @@ export default function ChildSafety() {
         <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
           <CardContent className="p-4 text-center">
             <Route className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
-            <h3 className="font-semibold text-blue-800 dark:text-blue-300">Route Tracking</h3>
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300">{t('child_safety.track_child')}</h3>
             <Button variant="outline" className="mt-2 w-full">
-              Track Route
+              {t('child_safety.track_child')}
             </Button>
           </CardContent>
         </Card>

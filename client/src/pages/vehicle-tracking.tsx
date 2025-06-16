@@ -24,8 +24,10 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function VehicleTracking() {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const [trackingMode, setTrackingMode] = useState("live");
@@ -127,10 +129,10 @@ export default function VehicleTracking() {
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Vehicle Tracking & Management
+          {t('vehicle.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
-          वाहन ट्रॅकिंग व व्यवस्थापन | Advanced Vehicle Monitoring System
+          {t('vehicle.description')}
         </p>
       </div>
 
@@ -139,10 +141,10 @@ export default function VehicleTracking() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Search className="h-5 w-5" />
-            Vehicle Search
+            {t('vehicle.search_vehicle')}
           </CardTitle>
           <CardDescription>
-            Enter registration number to track vehicle location and history
+            {t('vehicle.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
