@@ -139,7 +139,7 @@ export default function AnalyticsDashboard() {
           <CardContent>
             {dashboardData && dashboardData.crimeAnalysis?.hotspots?.length > 0 ? (
               <div className="space-y-4">
-                <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">Crime Hotspots</h4>
+                <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">{t('analytics.hotspots')}</h4>
                 {dashboardData.crimeAnalysis.hotspots.slice(0, 3).map((hotspot: any, index: number) => (
                   <div key={index} className="border rounded-lg p-3">
                     <div className="flex justify-between items-start mb-2">
@@ -163,7 +163,7 @@ export default function AnalyticsDashboard() {
               </div>
             ) : (
               <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                Analyzing crime patterns...
+                {t('common.loading')}
               </p>
             )}
           </CardContent>
@@ -174,10 +174,10 @@ export default function AnalyticsDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              AI-Generated Summary
+              {t('analytics.title')}
             </CardTitle>
             <CardDescription>
-              Intelligent briefing of current security situation
+              {t('analytics.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -187,11 +187,11 @@ export default function AnalyticsDashboard() {
                   {/* Overview Section */}
                   {dashboardData.summary.overview && (
                     <div className="text-sm leading-relaxed">
-                      <h5 className="font-medium mb-2">Overview</h5>
+                      <h5 className="font-medium mb-2">{t('analytics.description')}</h5>
                       <p className="text-gray-700 dark:text-gray-300">
                         {typeof dashboardData.summary.overview === 'string' 
                           ? dashboardData.summary.overview 
-                          : 'Dashboard data loaded successfully'}
+                          : t('common.loading')}
                       </p>
                     </div>
                   )}
@@ -199,7 +199,7 @@ export default function AnalyticsDashboard() {
                   {/* Trends Section */}
                   {dashboardData.summary.trends && Array.isArray(dashboardData.summary.trends) && dashboardData.summary.trends.length > 0 && (
                     <div className="text-sm">
-                      <h5 className="font-medium mb-2">Key Trends</h5>
+                      <h5 className="font-medium mb-2">{t('analytics.crime_trends')}</h5>
                       <ul className="space-y-1 text-gray-700 dark:text-gray-300">
                         {dashboardData.summary.trends.map((trend: string, index: number) => (
                           <li key={index} className="flex items-start gap-2">
@@ -214,7 +214,7 @@ export default function AnalyticsDashboard() {
                   {/* Insights Section */}
                   {dashboardData.summary.insights && Array.isArray(dashboardData.summary.insights) && dashboardData.summary.insights.length > 0 && (
                     <div className="text-sm">
-                      <h5 className="font-medium mb-2">AI Insights</h5>
+                      <h5 className="font-medium mb-2">{t('analytics.time_patterns')}</h5>
                       <ul className="space-y-1 text-gray-700 dark:text-gray-300">
                         {dashboardData.summary.insights.map((insight: string, index: number) => (
                           <li key={index} className="flex items-start gap-2">
@@ -235,7 +235,7 @@ export default function AnalyticsDashboard() {
                 </div>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                  Generating intelligent summary...
+                  {t('common.loading')}
                 </p>
               )}
             </div>
@@ -248,10 +248,10 @@ export default function AnalyticsDashboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Recent Incidents
+            {t('analytics.recent_incidents')}
           </CardTitle>
           <CardDescription>
-            Latest reported incidents across all categories
+            {t('analytics.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -293,7 +293,7 @@ export default function AnalyticsDashboard() {
               ))
             ) : (
               <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                No recent incidents to display
+                {t('common.loading')}
               </p>
             )}
           </div>
@@ -304,19 +304,19 @@ export default function AnalyticsDashboard() {
       <div className="flex flex-wrap gap-4 justify-center">
         <Button className="bg-blue-600 hover:bg-blue-700">
           <BarChart className="h-4 w-4 mr-2" />
-          Generate Report
+          {t('common.submit')}
         </Button>
         <Button variant="outline">
           <MapPin className="h-4 w-4 mr-2" />
-          View Crime Map
+          {t('analytics.hotspots')}
         </Button>
         <Button variant="outline">
           <Brain className="h-4 w-4 mr-2" />
-          AI Predictions
+          {t('analytics.time_patterns')}
         </Button>
         <Button variant="outline">
           <Activity className="h-4 w-4 mr-2" />
-          Real-time Monitor
+          {t('analytics.crime_trends')}
         </Button>
       </div>
     </div>
