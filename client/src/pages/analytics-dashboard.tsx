@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   BarChart, 
   LineChart, 
@@ -27,6 +28,7 @@ interface DashboardData {
 }
 
 export default function AnalyticsDashboard() {
+  const { t } = useLanguage();
   const { data: dashboardData, isLoading } = useQuery<DashboardData>({
     queryKey: ["/api/analytics/dashboard"],
   });
@@ -41,7 +43,7 @@ export default function AnalyticsDashboard() {
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
             <Activity className="h-8 w-8 animate-spin mx-auto mb-4" />
-            <p>Loading analytics dashboard...</p>
+            <p>{t('common.loading')}</p>
           </div>
         </div>
       </div>
@@ -52,10 +54,10 @@ export default function AnalyticsDashboard() {
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          AI-Powered Analytics Dashboard
+          {t('analytics.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
-          Real-time insights and predictive analysis for Ahilyangara Police
+          {t('analytics.description')}
         </p>
       </div>
 
@@ -65,7 +67,7 @@ export default function AnalyticsDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm">Total Incidents</p>
+                <p className="text-blue-100 text-sm">{t('analytics.total_incidents')}</p>
                 <p className="text-3xl font-bold">{dashboardData?.totalIncidents || 0}</p>
               </div>
               <BarChart className="h-8 w-8 text-blue-200" />
@@ -77,7 +79,7 @@ export default function AnalyticsDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-red-100 text-sm">Active Emergencies</p>
+                <p className="text-red-100 text-sm">{t('analytics.active_alerts')}</p>
                 <p className="text-3xl font-bold">{dashboardData?.activeEmergencies || 0}</p>
               </div>
               <AlertTriangle className="h-8 w-8 text-red-200" />
@@ -89,7 +91,7 @@ export default function AnalyticsDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm">Women Safety</p>
+                <p className="text-purple-100 text-sm">{t('nav.women_safety')}</p>
                 <p className="text-3xl font-bold">{dashboardData?.womenSafetyReports || 0}</p>
               </div>
               <Shield className="h-8 w-8 text-purple-200" />
@@ -101,7 +103,7 @@ export default function AnalyticsDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Child Safety</p>
+                <p className="text-green-100 text-sm">{t('nav.child_safety')}</p>
                 <p className="text-3xl font-bold">{dashboardData?.childSafetyAlerts || 0}</p>
               </div>
               <Users className="h-8 w-8 text-green-200" />
@@ -113,7 +115,7 @@ export default function AnalyticsDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-100 text-sm">Cyber Crime</p>
+                <p className="text-orange-100 text-sm">{t('nav.cyber_crime')}</p>
                 <p className="text-3xl font-bold">{dashboardData?.cyberCrimeReports || 0}</p>
               </div>
               <Brain className="h-8 w-8 text-orange-200" />
@@ -128,10 +130,10 @@ export default function AnalyticsDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
-              AI Crime Pattern Analysis
+              {t('analytics.crime_trends')}
             </CardTitle>
             <CardDescription>
-              Machine learning insights on crime hotspots and patterns
+              {t('analytics.hotspots')}
             </CardDescription>
           </CardHeader>
           <CardContent>
