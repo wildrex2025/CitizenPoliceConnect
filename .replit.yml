@@ -1,0 +1,3 @@
+workflows:
+  Start application:
+    runner: npm run dev
