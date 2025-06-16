@@ -10,9 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Shield, MapPin, AlertTriangle, Route, Users, Phone } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { WomenSafetyReport, SafeRoute } from "@shared/schema";
 
 export default function WomenSafety() {
+  const { t } = useLanguage();
   const [isReporting, setIsReporting] = useState(false);
   const [reportForm, setReportForm] = useState({
     incidentType: "",
@@ -76,8 +78,8 @@ export default function WomenSafety() {
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">महिला सुरक्षा केंद्र</h1>
-        <p className="text-gray-600 dark:text-gray-300">Women Safety Center - Your safety is our priority</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('women_safety.title')}</h1>
+        <p className="text-gray-600 dark:text-gray-300">{t('women_safety.description')}</p>
       </div>
 
       {/* Emergency Actions */}
@@ -85,9 +87,9 @@ export default function WomenSafety() {
         <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
           <CardContent className="p-4 text-center">
             <Shield className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-2" />
-            <h3 className="font-semibold text-red-800 dark:text-red-300">Emergency SOS</h3>
+            <h3 className="font-semibold text-red-800 dark:text-red-300">{t('emergency.title')}</h3>
             <Button className="mt-2 w-full bg-red-600 hover:bg-red-700 text-white">
-              Send Alert
+              {t('emergency.panic_button')}
             </Button>
           </CardContent>
         </Card>
@@ -95,9 +97,9 @@ export default function WomenSafety() {
         <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
           <CardContent className="p-4 text-center">
             <Route className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
-            <h3 className="font-semibold text-blue-800 dark:text-blue-300">Safe Routes</h3>
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300">{t('women_safety.safe_routes')}</h3>
             <Button variant="outline" className="mt-2 w-full">
-              Find Route
+              {t('women_safety.find_safe_route')}
             </Button>
           </CardContent>
         </Card>

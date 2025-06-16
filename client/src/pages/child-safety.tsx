@@ -10,9 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Baby, MapPin, AlertCircle, Route, Phone, Clock } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { ChildSafetyAlert } from "@shared/schema";
 
 export default function ChildSafety() {
+  const { t } = useLanguage();
   const [isReporting, setIsReporting] = useState(false);
   const [alertForm, setAlertForm] = useState({
     childName: "",
@@ -73,8 +75,8 @@ export default function ChildSafety() {
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">बाल संरक्षण केंद्र</h1>
-        <p className="text-gray-600 dark:text-gray-300">Child Protection Center - Every child deserves safety</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('child_safety.title')}</h1>
+        <p className="text-gray-600 dark:text-gray-300">{t('child_safety.description')}</p>
       </div>
 
       {/* Emergency Actions */}
@@ -82,9 +84,9 @@ export default function ChildSafety() {
         <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
           <CardContent className="p-4 text-center">
             <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400 mx-auto mb-2" />
-            <h3 className="font-semibold text-red-800 dark:text-red-300">Missing Child</h3>
+            <h3 className="font-semibold text-red-800 dark:text-red-300">{t('child_safety.safety_alert')}</h3>
             <Button className="mt-2 w-full bg-red-600 hover:bg-red-700 text-white">
-              Report Missing
+              {t('emergency.panic_button')}
             </Button>
           </CardContent>
         </Card>
