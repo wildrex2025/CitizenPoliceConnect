@@ -259,17 +259,7 @@ const translations: Record<'en' | 'mr', Record<string, string>> = {
     'community.area_coverage': 'क्षेत्र कव्हरेज',
     'community.member_count': 'सदस्य',
     
-    // Vehicle Tracking
-    'vehicle.title': 'वाहन ट्रॅकिंग सिस्टम',
-    'vehicle.description': 'वाहनांचा मागोवा घ्या आणि उल्लंघनाचा इतिहास पहा',
-    'vehicle.search_vehicle': 'वाहन शोधा',
-    'vehicle.registration_number': 'नोंदणी क्रमांक',
-    'vehicle.search': 'शोधा',
-    'vehicle.violation_history': 'उल्लंघनाचा इतिहास',
-    'vehicle.owner_details': 'मालकाचे तपशील',
-    'vehicle.vehicle_type': 'वाहनाचा प्रकार',
-    'vehicle.model': 'मॉडेल',
-    'vehicle.color': 'रंग',
+
     
     // Analytics Dashboard
     'analytics.title': 'विश्लेषण डॅशबोर्ड',
