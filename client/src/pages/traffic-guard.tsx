@@ -191,19 +191,19 @@ export default function TrafficGuard() {
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          AhilyaNagar TrafficGuard Pro
+          {t('app.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
-          AI-Powered Traffic Violation Detection & Citizen Reporting
+          {t('traffic.description')}
         </p>
       </div>
 
       <Tabs defaultValue="report" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="report">Report Violation</TabsTrigger>
-          <TabsTrigger value="rewards">My Rewards</TabsTrigger>
-          <TabsTrigger value="violations">Recent Reports</TabsTrigger>
-          <TabsTrigger value="analytics">Traffic Analytics</TabsTrigger>
+          <TabsTrigger value="report">{t('traffic.submit_report')}</TabsTrigger>
+          <TabsTrigger value="rewards">{t('common.success')}</TabsTrigger>
+          <TabsTrigger value="violations">{t('analytics.recent_incidents')}</TabsTrigger>
+          <TabsTrigger value="analytics">{t('analytics.title')}</TabsTrigger>
         </TabsList>
 
         {/* Report Violation Tab */}
@@ -212,10 +212,10 @@ export default function TrafficGuard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Camera className="h-5 w-5" />
-                Report Traffic Violation
+                {t('traffic.submit_report')}
               </CardTitle>
               <CardDescription>
-                Capture evidence and help make roads safer with AI-powered verification
+                {t('traffic.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

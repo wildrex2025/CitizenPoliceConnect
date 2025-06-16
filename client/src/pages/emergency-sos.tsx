@@ -44,8 +44,8 @@ export default function EmergencySOS() {
     onSuccess: (response: SOSResponse) => {
       queryClient.invalidateQueries({ queryKey: ["/api/sos/active"] });
       toast({ 
-        title: "Emergency Alert Sent!", 
-        description: "Emergency services have been notified. Help is on the way."
+        title: t('emergency.title'), 
+        description: t('emergency.description')
       });
       
       // Show fraud detection results if available
@@ -161,10 +161,10 @@ export default function EmergencySOS() {
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
-          🚨 Emergency SOS System
+          🚨 {t('emergency.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-300">
-          Advanced emergency response with AI-powered verification
+          {t('emergency.description')}
         </p>
       </div>
 
@@ -173,13 +173,13 @@ export default function EmergencySOS() {
         <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
           <CardContent className="p-6 text-center">
             <AlertTriangle className="h-12 w-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
-            <h3 className="font-bold text-red-800 dark:text-red-300 mb-2">Immediate Emergency</h3>
+            <h3 className="font-bold text-red-800 dark:text-red-300 mb-2">{t('emergency.title')}</h3>
             <Button 
               onClick={() => handleEmergencyAlert('general')}
               className="w-full bg-red-600 hover:bg-red-700 text-white"
               disabled={sosAlertMutation.isPending}
             >
-              {sosAlertMutation.isPending ? "Sending Alert..." : "SEND SOS"}
+              {sosAlertMutation.isPending ? t('common.loading') : t('emergency.panic_button')}
             </Button>
           </CardContent>
         </Card>
@@ -187,13 +187,13 @@ export default function EmergencySOS() {
         <Card className="bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800">
           <CardContent className="p-6 text-center">
             <Shield className="h-12 w-12 text-purple-600 dark:text-purple-400 mx-auto mb-4" />
-            <h3 className="font-bold text-purple-800 dark:text-purple-300 mb-2">Women Emergency</h3>
+            <h3 className="font-bold text-purple-800 dark:text-purple-300 mb-2">{t('nav.women_safety')}</h3>
             <Button 
               onClick={() => handleEmergencyAlert('women_safety')}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white"
               disabled={sosAlertMutation.isPending}
             >
-              Women Safety Alert
+              {t('emergency.call_women_helpline')}
             </Button>
           </CardContent>
         </Card>
@@ -201,13 +201,13 @@ export default function EmergencySOS() {
         <Card className="bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
           <CardContent className="p-6 text-center">
             <Phone className="h-12 w-12 text-orange-600 dark:text-orange-400 mx-auto mb-4" />
-            <h3 className="font-bold text-orange-800 dark:text-orange-300 mb-2">Medical Emergency</h3>
+            <h3 className="font-bold text-orange-800 dark:text-orange-300 mb-2">{t('emergency.call_ambulance')}</h3>
             <Button 
               onClick={() => handleEmergencyAlert('medical')}
               className="w-full bg-orange-600 hover:bg-orange-700 text-white"
               disabled={sosAlertMutation.isPending}
             >
-              Medical Alert
+              {t('emergency.call_ambulance')}
             </Button>
           </CardContent>
         </Card>
@@ -219,10 +219,10 @@ export default function EmergencySOS() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mic className="h-5 w-5" />
-              Voice-Activated Emergency
+              {t('emergency.voice_verification')}
             </CardTitle>
             <CardDescription>
-              Say "Help Me" to automatically trigger emergency alert
+              {t('emergency.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
