@@ -19,7 +19,7 @@ const translations: Record<'en' | 'mr', Record<string, string>> = {
     'nav.child_safety': 'Child Safety',
     'nav.cyber_crime': 'Cyber Crime',
     'nav.community_policing': 'Community Policing',
-    'nav.vehicle_tracking': 'Vehicle Tracking',
+
     'nav.analytics': 'Analytics Dashboard',
     
     // App Title and Headers
@@ -114,17 +114,7 @@ const translations: Record<'en' | 'mr', Record<string, string>> = {
     'community.area_coverage': 'Area Coverage',
     'community.member_count': 'Members',
     
-    // Vehicle Tracking
-    'vehicle.title': 'Vehicle Tracking System',
-    'vehicle.description': 'Track vehicles and view violation history',
-    'vehicle.search_vehicle': 'Search Vehicle',
-    'vehicle.registration_number': 'Registration Number',
-    'vehicle.search': 'Search',
-    'vehicle.violation_history': 'Violation History',
-    'vehicle.owner_details': 'Owner Details',
-    'vehicle.vehicle_type': 'Vehicle Type',
-    'vehicle.model': 'Model',
-    'vehicle.color': 'Color',
+
     
     // Analytics Dashboard
     'analytics.title': 'Analytics Dashboard',
@@ -174,7 +164,7 @@ const translations: Record<'en' | 'mr', Record<string, string>> = {
     'nav.child_safety': 'बाल सुरक्षा',
     'nav.cyber_crime': 'सायबर गुन्हे',
     'nav.community_policing': 'सामुदायिक पोलिसिंग',
-    'nav.vehicle_tracking': 'वाहन ट्रॅकिंग',
+
     'nav.analytics': 'विश्लेषण डॅशबोर्ड',
     
     // App Title and Headers

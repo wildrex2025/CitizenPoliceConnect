@@ -15,8 +15,6 @@ import AnalyticsDashboard from "@/pages/analytics-dashboard";
 import EmergencySOS from "@/pages/emergency-sos";
 import TrafficGuard from "@/pages/traffic-guard";
 import TrafficAccidentReporting from "@/pages/traffic-accident-reporting";
-import RealTimeTrafficMonitor from "@/pages/real-time-traffic-monitor";
-import VehicleTracking from "@/pages/vehicle-tracking";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -29,8 +27,6 @@ function Router() {
       <Route path="/emergency" component={EmergencySOS} />
       <Route path="/traffic-guard" component={TrafficGuard} />
       <Route path="/traffic-accidents" component={TrafficAccidentReporting} />
-      <Route path="/traffic-monitor" component={RealTimeTrafficMonitor} />
-      <Route path="/vehicle-tracking" component={VehicleTracking} />
       <Route component={NotFound} />
     </Switch>
   );

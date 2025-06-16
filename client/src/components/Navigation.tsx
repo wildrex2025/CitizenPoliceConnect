@@ -22,7 +22,6 @@ const navigationItems = [
   { path: '/emergency', icon: Phone, key: 'nav.emergency_sos' },
   { path: '/women-safety', icon: Users, key: 'nav.women_safety' },
   { path: '/child-safety', icon: Baby, key: 'nav.child_safety' },
-  { path: '/vehicle-tracking', icon: Car, key: 'nav.vehicle_tracking' },
   { path: '/analytics', icon: BarChart, key: 'nav.analytics' },
 ];
 
